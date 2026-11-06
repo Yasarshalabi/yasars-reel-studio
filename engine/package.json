@@ -4,7 +4,7 @@
   "description": "Curated Reel Studio Remotion runtime",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mohamedabdou-ai/reel-studio.git",
+    "url": "https://github.com/Yasarshalabi/yasars-reel-studio.git",
     "directory": "engine"
   },
   "license": "MIT",

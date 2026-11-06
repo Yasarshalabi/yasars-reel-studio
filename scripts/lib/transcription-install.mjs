@@ -8,6 +8,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { ROOT } from './media.mjs';
 import { sha256File, transcriptionCacheKey, assertTranscriptionOutputPath, writeTranscriptionJson } from './transcription.mjs';
 import { downloadVerified, renameWithRetry } from './studio-download.mjs';
+import { IS_MAC } from './platform.mjs';
 
 export const DEFAULT_WHISPER_RELEASE = 'b4938';
 export const WHISPER_RUNTIME_FILE = path.join(ROOT, 'Tools', 'whisper-runtime.json');
@@ -63,11 +64,14 @@ const allFiles = async dir => (await Promise.all((await fsp.readdir(dir, { withF
 async function hashWhisperRuntime(directory) {
   assertTranscriptionOutputPath(directory);
   const files = await allFiles(directory);
-  const executable = files.find(file => path.basename(file).toLowerCase() === 'whisper-cli.exe');
-  if (!executable) throw new Error('No whisper-cli.exe found in the installed archive.');
+  // A macOS runtime is the CLI built on the Mac; anywhere else the runtime is the official Windows release layout.
+  const cli = IS_MAC ? 'whisper-cli' : 'whisper-cli.exe';
+  const executable = files.find(file => path.basename(file).toLowerCase() === cli);
+  if (!executable) throw new Error(`No ${cli} found in the installed runtime.`);
   assertTranscriptionOutputPath(executable);
   const binaryFiles = {};
-  for (const file of files.filter(file => /\.(dll|exe)$/i.test(file)).sort()) {
+  const isBinary = !IS_MAC ? file => /\.(dll|exe)$/i.test(file) : file => file === executable || /\.(dylib|so|metallib)$/i.test(file);
+  for (const file of files.filter(isBinary).sort()) {
     assertTranscriptionOutputPath(file);
     binaryFiles[path.relative(directory, file)] = await sha256File(file);
   }
@@ -136,6 +140,7 @@ export async function inspectWhisperRuntime(directory, options = {}) {
 }
 
 export async function installWhisper({ releaseTag = DEFAULT_WHISPER_RELEASE, model = 'medium', withVad = false } = {}) {
+  if (IS_MAC) throw new Error('On macOS the transcription runtime is built by node scripts/studio.mjs setup from the pinned whisper.cpp commit.');
   if (process.platform !== 'win32' || process.arch !== 'x64') throw new Error('This installer is scoped to the project Windows x64 host.');
   if (!/^(?:b\d+|v\d+\.\d+\.\d+)$/.test(releaseTag)) throw new Error('Use an explicit official release tag, for example b4938.');
   const response = await fetch(`https://api.github.com/repos/ggml-org/whisper.cpp/releases/tags/${releaseTag}`, { headers: { Accept: 'application/vnd.github+json' } });
@@ -177,11 +182,15 @@ export function pinnedWhisperPaths({ runtime, model, vad }, root = ROOT) {
 }
 
 // Setup's transcription step: the runtime, model and VAD pinned in versions.lock.json, verified files reused.
-export async function installPinnedWhisper(pins, { root = ROOT, download = downloadVerified, extract = extractRuntime, inspect = inspectWhisperRuntime, log = () => {} } = {}) {
-  if (process.platform !== 'win32' || process.arch !== 'x64') throw new Error('This installer is scoped to the project Windows x64 host.');
+export async function installPinnedWhisper(pins, { root = ROOT, download = downloadVerified, extract = extractRuntime, inspect = inspectWhisperRuntime, log = () => {}, mac = null } = {}) {
+  const macPin = mac ?? (IS_MAC ? pins.macos ?? null : null);
+  if (!macPin && (process.platform !== 'win32' || process.arch !== 'x64')) throw new Error('This installer supports macOS (Apple Silicon) and Windows x64.');
   const { runtime, model, vad } = pins;
   const paths = pinnedWhisperPaths(pins, root);
-  if (!fs.existsSync(path.join(paths.directory, 'install.json'))) {
+  if (macPin && !fs.existsSync(path.join(paths.directory, 'install.json'))) {
+    const built = await buildWhisperForMac(macPin, { root, log });
+    await extract({ archive: built.binDir, directory: paths.directory, record: { releaseTag: macPin.release, releaseUrl: `https://github.com/ggml-org/whisper.cpp/releases/tag/${macPin.release}`, releaseCommit: macPin.commit, archiveSha256: null, archiveUrl: macPin.repo, builtFromSource: true, backend: 'metal' } }, { unzip: copyBuiltRuntime });
+  } else if (!fs.existsSync(path.join(paths.directory, 'install.json'))) {
     log(`transcription: whisper.cpp ${runtime.release}`);
     await download({ url: runtime.url, sha256: runtime.sha256, bytes: runtime.bytes, target: paths.archive });
     await extract({ archive: paths.archive, directory: paths.directory, record: { releaseTag: runtime.release, releaseUrl: `https://github.com/ggml-org/whisper.cpp/releases/tag/${runtime.release}`, releaseCommit: null, archiveSha256: runtime.sha256, archiveUrl: runtime.url } });
@@ -212,4 +221,57 @@ export async function verifyPinnedWhisper(pins, { root = ROOT, inspect = inspect
     await inspect(paths.directory);
     return true;
   } catch { return false; }
+}
+
+// macOS: whisper.cpp publishes no Apple Silicon CLI, so the pinned commit is built here with Apple's own compiler
+// (Command Line Tools) and Metal, the GPU path that makes transcription fast on a Mac. The git commit hash is the pin.
+const BUILD_TIMEOUT_MS = 40 * 60 * 1000;
+function runChecked(command, args, { cwd, log, label }) {
+  log?.(`transcription: ${label}`);
+  const result = spawnSync(command, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8', timeout: BUILD_TIMEOUT_MS, env: process.env });
+  if (result.error) throw result.error.code === 'ENOENT' ? new Error(`${command} is not installed. ${TOOLS_HINT}`) : result.error;
+  if (result.status !== 0) throw new Error(`${label} failed (exit ${result.status}): ${(result.stderr || result.stdout || '').trim().split('\n').slice(-6).join(' | ')}`);
+  return result.stdout.trim();
+}
+const TOOLS_HINT = 'Install Apple Command Line Tools with: xcode-select --install (a macOS window asks you to confirm), then run node scripts/studio.mjs setup again.';
+
+export function assertAppleBuildTools(run = spawnSync) {
+  const selected = run('xcode-select', ['-p'], { encoding: 'utf8' });
+  const clang = run('clang', ['--version'], { encoding: 'utf8' });
+  if (selected.status !== 0 || clang.status !== 0) throw new Error(`Apple Command Line Tools are missing. ${TOOLS_HINT}`);
+}
+
+async function ensureCmake(pin, { root, log }) {
+  const env = path.join(root, 'Tools', 'buildenv');
+  const cmake = path.join(env, 'bin', 'cmake');
+  const installed = fs.existsSync(cmake) ? spawnSync(cmake, ['--version'], { encoding: 'utf8' }).stdout ?? '' : '';
+  if (installed.includes(`cmake version ${pin.cmake}`)) return cmake;
+  runChecked('python3', ['-m', 'venv', env], { log, label: 'creating the local build environment' });
+  runChecked(path.join(env, 'bin', 'pip'), ['install', '--disable-pip-version-check', '--no-input', `cmake==${pin.cmake}`], { log, label: `installing CMake ${pin.cmake} into Tools/buildenv` });
+  return cmake;
+}
+
+export async function buildWhisperForMac(pin, { root = ROOT, log = () => {} } = {}) {
+  assertAppleBuildTools();
+  const cmake = await ensureCmake(pin, { root, log });
+  const src = assertTranscriptionOutputPath(path.join(root, 'state', 'cache', `whisper-src-${pin.release}`));
+  if (!fs.existsSync(path.join(src, '.git'))) {
+    await fsp.rm(src, { recursive: true, force: true });
+    runChecked('git', ['clone', '--depth', '1', '--branch', pin.release, pin.repo, src], { log, label: `downloading whisper.cpp ${pin.release}` });
+  }
+  const head = runChecked('git', ['rev-parse', 'HEAD'], { cwd: src, label: 'reading the whisper.cpp commit' });
+  if (head !== pin.commit) throw new Error(`whisper.cpp ${pin.release} is at ${head}, expected the pinned commit ${pin.commit}. Delete ${path.relative(root, src)} and run setup again.`);
+  const build = path.join(src, 'build');
+  runChecked(cmake, ['-S', src, '-B', build, '-DCMAKE_BUILD_TYPE=Release', '-DBUILD_SHARED_LIBS=OFF', '-DGGML_METAL=ON', '-DGGML_METAL_EMBED_LIBRARY=ON', '-DWHISPER_BUILD_TESTS=OFF', '-DWHISPER_BUILD_EXAMPLES=ON', '-DWHISPER_SDL2=OFF'], { log, label: 'configuring the whisper.cpp build (Metal)' });
+  runChecked(cmake, ['--build', build, '--config', 'Release', '--target', 'whisper-cli', '-j'], { log, label: 'compiling whisper.cpp (a few minutes)' });
+  const binDir = path.join(build, 'bin');
+  if (!fs.existsSync(path.join(binDir, 'whisper-cli'))) throw new Error('The whisper.cpp build finished without build/bin/whisper-cli.');
+  return { binDir, commit: head };
+}
+
+// Plays the role of unzip for a source build: copy the compiled CLI into the staging folder.
+export async function copyBuiltRuntime(binDir, staging) {
+  const target = path.join(staging, 'whisper-cli');
+  await fsp.copyFile(path.join(binDir, 'whisper-cli'), target);
+  await fsp.chmod(target, 0o755);
 }

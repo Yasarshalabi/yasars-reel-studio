@@ -12,7 +12,10 @@ import {DIGIT_CHOICES, DIGIT_LABELS_AR, PREFERENCE_VALUES, defaultPreferences, r
 import {editManifestSchema} from '../engine/src/prepared-edit/schema.ts';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
-const example = JSON.parse(await readFile(new URL('../PROFILE.example.json', import.meta.url), 'utf8'));
+// The 2.5-era example profile (Egyptian, blue and amber): 4.1's example starts in Levantine with new colours, but an
+// existing profile must still print the exact same bytes.
+const example = {...JSON.parse(await readFile(new URL('../PROFILE.example.json', import.meta.url), 'utf8')), language: 'ar-EG'};
+example.brand = {...example.brand, primary: '#4D8DFF', accent: '#FFB020'};
 const sixKeys = ['style', 'captionsGrouping', 'captionsPresentation', 'font', 'writingStyle', 'palette'];
 const words = Array.from({length: 8}, (_, i) => ({text: 'كلمة', startMs: i * 400, endMs: i * 400 + 350, confidence: 1}));
 const source = {path: 'Raw/example.mp4', sha256: 'a'.repeat(64), fps: 30, width: 1080, height: 1920, totalFrames: 120};

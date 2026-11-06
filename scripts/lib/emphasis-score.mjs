@@ -49,7 +49,7 @@ export function parseWav(buf) {
   if (!fmt || dataOff < 0) throw new Error('WAV has no fmt/data chunk.');
   if ((fmt.format !== 1 && fmt.format !== 0xfffe) || fmt.bits !== 16 || fmt.channels !== 1) {
     throw new Error(`Expected 16-bit PCM mono WAV, got format ${fmt.format}, ${fmt.bits}-bit, ${fmt.channels} channel(s). ` +
-      'Extract it with: Tools/bin/ffmpeg.exe -v error -i <source> -vn -ac 1 -ar 16000 -c:a pcm_s16le <out.wav>');
+      'Extract it with: Tools/bin/ffmpeg -v error -i <source> -vn -ac 1 -ar 16000 -c:a pcm_s16le <out.wav>');
   }
   const n = Math.min(dataLen, buf.length - dataOff) >> 1;
   const samples = new Float32Array(n);

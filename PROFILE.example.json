@@ -2,15 +2,15 @@
   "schemaVersion": 3,
   "name": "اسمك أو اسم البراند",
   "handle": null,
-  "language": "ar-EG",
+  "language": "ar-JO",
   "ending": {
     "followCard": false,
     "ctaDefault": null,
     "signOff": null
   },
   "brand": {
-    "primary": "#4D8DFF",
-    "accent": "#FFB020",
+    "primary": "#E2456B",
+    "accent": "#C6D16A",
     "background": null,
     "text": null
   },

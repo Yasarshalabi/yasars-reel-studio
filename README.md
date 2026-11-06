@@ -1,35 +1,20 @@
 <div dir="rtl">
 
 <p align="center">
-  <img src="docs/images/readme/banner.png" alt="Reel Studio 4.0 — مونتاج ريلز بطريقتك" width="100%">
+  <img src="docs/images/readme/banner-yasar.png" alt="Yasar's Reel Studio — مونتاج ريلز بطريقتك على Mac وWindows" width="100%">
 </p>
 
-<h1 align="center">Reel Studio 4.0 🎬</h1>
+<h1 align="center">Yasar's Reel Studio 4.1 🎬</h1>
+
+<p align="center"><b>مونتاج ريلز عربي وإنجليزي بفريق مونتاج كامل — على Mac (Apple Silicon) وWindows.</b></p>
 
 <p align="center">
-  <a href="#start"><img src="docs/images/readme/start.png" alt="ابدأ التثبيت المجاني في ٣ خطوات" width="480"></a>
-</p>
-
-<p align="center">
-  <a href="https://store.pyraai.cloud/product/reel-studio/"><img src="docs/images/readme/book.png" alt="احجز جلستك الاستشارية اليوم" width="460"></a>
-  <a href="https://github.com/mohamedabdou-ai/reel-studio"><img src="docs/images/readme/star.png" alt="ضع نجمة للمشروع على GitHub" width="330"></a>
-</p>
-
-<p align="center">
-  <sub>جلسة خاصة اختيارية ومدفوعة مع صانع الاستوديو عبر الإنترنت: التثبيت، أو حل مشكلة، أو ضبط ريل على ذوقك.</sub>
-</p>
-
-<h3 align="center">تابع صانع الاستوديو</h3>
-
-<p align="center">
-  <a href="https://www.instagram.com/mohamed.abdou90"><img src="docs/images/readme/follow-instagram.png" alt="تابع صانع الاستوديو على إنستجرام" width="190"></a>
-  <a href="https://www.facebook.com/mohamedabdou.ai.90"><img src="docs/images/readme/follow-facebook.png" alt="تابع صانع الاستوديو على فيسبوك" width="190"></a>
-  <a href="https://www.tiktok.com/@mohamedabdou.ai"><img src="docs/images/readme/follow-tiktok.png" alt="تابع صانع الاستوديو على تيك توك" width="190"></a>
-  <a href="https://www.youtube.com/@mohamedabdou-ai"><img src="docs/images/readme/follow-youtube.png" alt="تابع صانع الاستوديو على يوتيوب" width="190"></a>
+  <a href="#start">ابدأ التثبيت المجاني في ٣ خطوات</a> ·
+  <a href="https://github.com/Yasarshalabi/yasars-reel-studio">المشروع على GitHub</a>
 </p>
 
 <p align="center">
-  <a href="#whats-new">الجديد في 4.0</a> ·
+  <a href="#whats-new">الجديد في 4.1</a> ·
   <a href="#capabilities">كل ما يقدر عليه الاستوديو</a> ·
   <a href="#style-copy">انسخ ستايل أي فيديو</a> ·
   <a href="#styles">الـ١١ ستايل</a> ·
@@ -44,9 +29,23 @@
 
 **أعجبك أسلوب فيديو؟ سمِّه فقط:** يتعلّم المساعد إيقاعه وحركته وكابشنه وشكله، ويطبّقها على فيديوك أنت.
 
-كود Reel Studio مجاني بترخيص MIT، ويعمل على Windows 64-bit مع Claude Code أو Codex. استخدام المساعد وتراخيص الأدوات الخارجية منفصلان؛ التفاصيل في [تراخيص الأدوات](NOTICE.md).
+كود Yasar's Reel Studio مجاني بترخيص MIT، ويعمل على **macOS (Apple Silicon)** و**Windows 64-bit** مع Claude Code أو Codex. وهو نسخة مطوّرة من [Reel Studio](https://github.com/mohamedabdou-ai/reel-studio) لمحمد عبده. استخدام المساعد وتراخيص الأدوات الخارجية منفصلان؛ التفاصيل في [تراخيص الأدوات](NOTICE.md).
 
 <a id="whats-new"></a>
+
+## الجديد في 4.1: يعمل على Mac، ويتكلم لهجتك
+
+| الجديد | فائدته في عملك |
+| --- | --- |
+| **يعمل على Mac** | يُثبَّت الاستوديو على أجهزة Mac بمعالج Apple Silicon (M1 وما بعده) كما يُثبَّت على Windows، بنفس الجملة ونفس الخطوات. والتفريغ الصوتي على Mac يستخدم معالج الرسوم في الجهاز، فيكون أسرع. |
+| **اختر لغتك ولهجتك** | أول خطوة في الإعداد هي اللغة: شامي، أو مصري، أو خليجي، أو مغاربي، أو عربي أبيض، أو English. المساعد يتكلم معك بها، ووصف المنشور يُكتب بها، والتفريغ الصوتي يسمع لها. وتقدر تختار لغة أخرى لفيديو واحد. |
+| **شاشة إعدادات جديدة** | تصميم جديد بخطوات مرسومة كخط زمني للمونتاج، وتظهر بالعربية أو بالإنجليزية حسب لغتك، ومعاينات الكابشن والخطوط بلهجتك. |
+| **محرر بهوية جديدة** | ألوان جديدة لمحرر المراجعة تريح العين أثناء العمل الطويل. |
+| **بلا إشارات استخدام** | الاستوديو لا يرسل أي إشارة استخدام إلى أي جهة. |
+
+للتحديث قل **«حدّث الاستوديو»**، ثم افتح جلسة جديدة. ملفك الشخصي ومشاريعك محفوظة؛ ملفك القديم يبقى باللهجة المصرية حتى تغيّرها من الإعدادات. [سجل التغييرات](CHANGELOG.md).
+
+<a id="whats-new-4-0"></a>
 
 ## الجديد في 4.0: الفريق أصبح يرسم كلامك، ولكل ستايل مخرج بطريقته
 
@@ -134,29 +133,33 @@
 
 ## ابدأ في ٣ خطوات
 
-تحتاج **Windows 64-bit**، وClaude Code أو Codex يقدر يقرأ ملفاتك ويشغّل الأدوات. تحتاج إنترنت للتجهيز والتحديث واستخدام المساعد، ومساحة للأدوات وفيديوهاتك.
+تحتاج **Mac بمعالج Apple Silicon (M1 أو أحدث)** أو **Windows 64-bit**، وClaude Code أو Codex يقدر يقرأ ملفاتك ويشغّل الأدوات. تحتاج إنترنت للتجهيز والتحديث واستخدام المساعد، ومساحة للأدوات وفيديوهاتك (حوالي 5 GB).
 
-1. افتح فولدر فاضي ومستقل للاستوديو في المساعد.
-2. انسخ الجملة دي وابعتها له:
+1. افتح فولدرًا فارغًا ومستقلًا للاستوديو في المساعد.
+2. انسخ هذه الجملة وأرسلها له:
 
    ```text
-   نزّل Reel Studio في الفولدر ده من https://github.com/mohamedabdou-ai/reel-studio واتبع AGENTS.md اللي فيه عشان تجهّزه
+   نزّل Yasar's Reel Studio في هذا الفولدر من https://github.com/Yasarshalabi/yasars-reel-studio واتبع AGENTS.md الموجود فيه لتجهيزه
    ```
 
-3. اختار اسمك وذوقك من الشاشة العربية، واضغط **«احفظ وابدأ»**. المساعد ينزّل الأدوات جوه الفولدر ويتابع التجهيز وفحص النظام معاك.
+   أو بالإنجليزية:
 
-<p align="center"><a href="docs/images/readme/shot-onboarding.jpg"><img src="docs/images/readme/shot-onboarding.jpg" alt="شاشة أول تشغيل: اختر اسمك وذوقك ومنصاتك ثم اضغط احفظ وابدأ" width="100%"></a></p>
+   ```text
+   Install Yasar's Reel Studio in this folder from https://github.com/Yasarshalabi/yasars-reel-studio and follow its AGENTS.md to set it up
+   ```
 
-<p align="center"><sub>شاشة أول تشغيل. اضغط على الصورة لعرضها بحجمها الأصلي.</sub></p>
+3. اختر لغتك واسمك وذوقك من شاشة الإعدادات، واضغط **«احفظ وابدأ»**. المساعد ينزّل الأدوات داخل الفولدر ويتابع التجهيز وفحص النظام معك.
 
-بعد التجهيز، حط الفيديو في فولدر `Raw`، وافتح جلسة جديدة في نفس فولدر الاستوديو، وقول:
+على Mac، إذا لم تكن أدوات المطوّر من Apple مثبتة، تظهر نافذة تطلب تثبيت **Command Line Tools**: وافق عليها (مجانية، 5–10 دقائق)، فهي التي تبني أداة التفريغ الصوتي على جهازك.
+
+بعد التجهيز، ضع الفيديو في فولدر `Raw`، وافتح جلسة جديدة في نفس فولدر الاستوديو، وقل:
 
 ```text
 عدّل الفيديو Raw/my-video.mp4 لريل إنستجرام وتيك توك.
 اعرض عليّ التفريغ، واسألني قبل حذف أي كلام، وافتح المحرر لأراجع معك.
 ```
 
-أول تجهيز بياخد وقت حسب النت والجهاز. لو حاجة وقفت، ابعت للمساعد رسالة الخطأ أو قول **«افحص النظام»**.
+أول تجهيز يأخذ وقتًا حسب الإنترنت والجهاز. إذا توقف شيء، أرسل للمساعد رسالة الخطأ أو قل **«افحص النظام»**.
 
 <a id="preferences"></a>
 
@@ -322,57 +325,16 @@
 <a id="camera-explainers"></a>
 <a id="product-explainers"></a>
 
-## شوف أمثلة من الشغل
-
-**يمين: التصوير الأصلي. شمال: بعد المونتاج.** اضغط على المثال عشان تشوف المقطع.
+## أمثلة من الشغل
 
 <table>
   <tr>
-    <td align="center" width="50%"><a href="https://store.pyraai.cloud/wp-content/uploads/2026/09/reel-studio-v1-before-after-card.mp4"><img src="docs/media/before-after-card.gif" alt="قبل وبعد: المتحدث داخل بطاقة مع كروت للشرح" width="100%"></a><br><b>أنت داخل بطاقة</b></td>
-    <td align="center" width="50%"><a href="https://store.pyraai.cloud/wp-content/uploads/2026/09/reel-studio-v1-before-after-split.mp4"><img src="docs/media/before-after-split.gif" alt="قبل وبعد: فكرة في الأعلى ومتحدث في الأسفل" width="100%"></a><br><b>الفكرة مع المتحدث</b></td>
+    <td align="center" width="50%"><img src="docs/media/before-after-card.gif" alt="قبل وبعد: المتحدث داخل بطاقة مع كروت" width="250"></td>
+    <td align="center" width="50%"><img src="docs/media/before-after-split.gif" alt="قبل وبعد: فكرة في الأعلى ومتحدث في الأسفل" width="250"></td>
   </tr>
 </table>
 
-الأمثلة دي من أعمال **محمد عبده** بالنظام الكامل اللي اتبنى منه Reel Studio. مشاهدها اتصمّمت لمحتواها؛ الحزمة فيها الأدوات القابلة للاستخدام الموضّحة فوق، والنتيجة بتعتمد على فيديوك واختياراتك ومراجعتك.
-
-<details>
-<summary><b>أمثلة أكتر: موشن، مؤتمرات، بودكاست، وشرح عملي</b></summary>
-
-<table>
-  <tr>
-    <td align="center" width="50%"><img src="docs/media/motion-explainer.gif" alt="مقتطف صامت من شرح API vs MCP بمخطط متحرك" width="250"><br><b>شرح بالموشن</b></td>
-    <td align="center" width="50%"><img src="docs/media/showcase-event-reel.gif" alt="مقتطف من ريل مؤتمر يجمع المتحدث ومشاهد الحدث" width="250"><br><b>مؤتمر ورحلة</b></td>
-  </tr>
-  <tr>
-    <td align="center" width="50%"><img src="docs/media/showcase-podcast.gif" alt="مقتطف من مجموعة ريلز لبودكاست عن الأتمتة" width="250"><br><b>مقاطع من بودكاست</b></td>
-    <td align="center" width="50%"><img src="docs/media/showcase-canva-tutorial.gif" alt="شرح ChatGPT وCanva بتسجيل شاشة وتوضيحات" width="250"><br><b>شرح عملي</b></td>
-  </tr>
-  <tr>
-    <td align="center" width="50%"><img src="docs/media/showcase-clinic-workflow.gif" alt="رحلة عميل تتشرح بكروت وروابط متحركة" width="250"><br><b>خطوات ورحلة عميل</b></td>
-    <td align="center" width="50%"><img src="docs/media/showcase-reel-factory.gif" alt="مقتطف صامت من إعلان ثلاثي الأبعاد للنظام الكامل" width="250"><br><b>إعلان مخصّص بالنظام الكامل</b></td>
-  </tr>
-</table>
-
-<details>
-<summary><b>كولاج، كتابة عربية، وأمثلة تانية</b></summary>
-
-<table>
-  <tr>
-    <td align="center" width="33%"><a href="https://store.pyraai.cloud/wp-content/uploads/2026/09/reel-studio-v1-loop-collage.mp4"><img src="docs/media/collage.jpg" alt="كولاج ورقي من ريل حقيقي" width="100%"></a><br><b>كولاج</b></td>
-    <td align="center" width="33%"><a href="https://store.pyraai.cloud/wp-content/uploads/2026/09/reel-studio-v1-loop-calligraphy.mp4"><img src="docs/media/calligraphy.jpg" alt="كتابة عربية من ريل حقيقي" width="100%"></a><br><b>كتابة عربية</b></td>
-    <td align="center" width="33%"><a href="https://store.pyraai.cloud/wp-content/uploads/2026/09/reel-studio-v1-loop-data-story.mp4"><img src="docs/media/data-story.jpg" alt="رسوم توضح أرقامًا وبيانات" width="100%"></a><br><b>شرح أرقام</b></td>
-  </tr>
-</table>
-
-<p align="center"><img src="docs/media/showcase-gold-flight.gif" alt="مقتطف صامت من إعلان الرحلة الذهبية المخصّص" width="250"></p>
-
-</details>
-
-معاينات GIF المعروضة في الصفحة صامتة. إعلانات 3D والتعليق الصوتي المولّد فيها شغل مخصّص من النظام الكامل؛ الحزمة بتشتغل على تسجيلك، وما بتضيفش توليد صوت أو قالب الإعلانات دي.
-
-[مصادر الأمثلة وحقوقها](docs/media/README.md).
-
-</details>
+هذه الأمثلة من أعمال **محمد عبده**، صانع Reel Studio الأصلي، بالنظام الكامل الذي بُني منه. معاينات GIF صامتة. [مصادر الأمثلة وحقوقها](docs/media/README.md).
 
 <a id="update"></a>
 
@@ -384,7 +346,7 @@
 
 لو ظهر خطأ، ابعته للمساعد عشان يحدد سببه. احتفظ بالنسخة القديمة لو احتجت تجهيز فولدر جديد؛ حذف مشاريعك مش خطوة مطلوبة للتحديث.
 
-[آخر إصدار](https://github.com/mohamedabdou-ai/reel-studio/releases/latest) · [الجديد في كل نسخة](CHANGELOG.md).
+[آخر إصدار](https://github.com/Yasarshalabi/yasars-reel-studio/releases/latest) · [الجديد في كل نسخة](CHANGELOG.md).
 
 <details>
 <summary>الإصدارات السابقة</summary>
@@ -501,9 +463,9 @@
 ## أسئلة سريعة
 
 <details>
-<summary><b>ينفع على الموبايل أو Mac؟</b></summary>
+<summary><b>يعمل على Mac؟ وعلى الموبايل؟</b></summary>
 
-التجهيز الحالي مخصص لـWindows 64-bit. الموبايل وmacOS مش مدعومين حاليًا.
+نعم على Mac بمعالج Apple Silicon (M1 وما بعده) وعلى Windows 64-bit. أجهزة Mac بمعالج Intel وWindows على ARM والموبايل غير مدعومة.
 
 </details>
 
@@ -512,7 +474,7 @@
 
 التفريغ والرندر والفحوصات بتتم على جهازك. Reel Studio نفسه ما بيرفعش فيديوهاتك ولا بينشرها؛ استخدام المساعد بيخضع لإعدادات وخصوصية الخدمة اللي تختارها. بتراجع الملف ووصف المنشور وتنشر بنفسك.
 
-لمعرفة أن التحديثات تصل وتعمل، يرسل الاستوديو إشارة صغيرة عند نجاح التثبيت، وإشارة عند استخدامه مرة واحدة في اليوم على الأكثر. ويرسل أيضًا إشارة عند تسليم فيديو نهائي تحمل اسم الستايل فقط، وإشارة إذا توقف التثبيت تحمل اسم الخطوة التي توقف عندها فقط. تحمل كل إشارة رقم الإصدار ومعه رمز عشوائي خاص بهذا التثبيت لا يدل عليك. لا تُرسل أسماء أو فيديوهات أو ملفات من جهازك. لإيقاف هذه الإشارات تمامًا، اطلب من المساعد ضبط متغير البيئة `REEL_STUDIO_STATS` على `off`.
+الاستوديو لا يرسل أي إشارة استخدام أو إحصاءات إلى أي جهة.
 
 </details>
 
@@ -524,20 +486,9 @@
 </details>
 
 <details>
-<summary><b>تحتاج مساعدة مباشرة، أو تريد دعم المشروع؟</b></summary>
+<summary><b>توقف التجهيز أو تريد الإبلاغ عن مشكلة؟</b></summary>
 
-احجز جلسة خاصة عبر الإنترنت مع صانع الاستوديو. تشارك شاشتك ونعمل معًا على جهازك: التثبيت، أو حل خطأ، أو ضبط ريل حتى يخرج كما تريد. الأداة مجانية، والجلسة اختيارية تُدفع مرة واحدة، ومقابلها يدعم تطوير Reel Studio.
-
-[احجز جلستك الاستشارية اليوم](https://store.pyraai.cloud/product/reel-studio/)
-
-</details>
-
-<details>
-<summary><b>التجهيز وقف أو عايز تبلغ عن مشكلة؟</b></summary>
-
-ابعت للمساعد رسالة الخطأ. ولو هتفتح [Issue](https://github.com/mohamedabdou-ai/reel-studio/issues/new)، اكتب الإصدار والخطوة اللي وقفت ورسالة الخطأ، واحذف أي بيانات شخصية من الصور والسجلات.
-
-وإذا أردت أن نحلها معك مباشرة على جهازك في جلسة خاصة اختيارية ومدفوعة: [احجز جلستك الاستشارية اليوم](https://store.pyraai.cloud/product/reel-studio/).
+أرسل للمساعد رسالة الخطأ. وإذا فتحت [Issue](https://github.com/Yasarshalabi/yasars-reel-studio/issues/new)، اكتب الإصدار ونوع جهازك (Mac أو Windows) والخطوة التي توقفت ورسالة الخطأ، واحذف أي بيانات شخصية من الصور والسجلات.
 
 </details>
 
@@ -566,20 +517,12 @@
 
 ---
 
-<h2 align="center">صنعه محمد عبده</h2>
+<h2 align="center">Yasar's Reel Studio</h2>
 
-<p align="center">
-  <a href="https://store.pyraai.cloud/product/reel-studio/"><img src="docs/images/readme/book.png" alt="احجز جلستك الاستشارية اليوم" width="460"></a>
-  <a href="https://github.com/mohamedabdou-ai/reel-studio"><img src="docs/images/readme/star.png" alt="ضع نجمة للمشروع على GitHub" width="330"></a>
-</p>
+<p align="center">نسخة Mac واللهجات من إعداد <b>يسار شلبي</b> · <a href="https://www.instagram.com/yasarshalabi">@yasarshalabi</a></p>
 
-<p align="center">
-  <a href="https://www.instagram.com/mohamed.abdou90"><img src="docs/images/readme/follow-instagram.png" alt="تابع صانع الاستوديو على إنستجرام" width="190"></a>
-  <a href="https://www.facebook.com/mohamedabdou.ai.90"><img src="docs/images/readme/follow-facebook.png" alt="تابع صانع الاستوديو على فيسبوك" width="190"></a>
-  <a href="https://www.tiktok.com/@mohamedabdou.ai"><img src="docs/images/readme/follow-tiktok.png" alt="تابع صانع الاستوديو على تيك توك" width="190"></a>
-  <a href="https://www.youtube.com/@mohamedabdou-ai"><img src="docs/images/readme/follow-youtube.png" alt="تابع صانع الاستوديو على يوتيوب" width="190"></a>
-</p>
+<p align="center">مبني على <a href="https://github.com/mohamedabdou-ai/reel-studio">Reel Studio</a> لـ<b>محمد عبده</b>، بترخيص MIT. شكرًا له على العمل الأصلي.</p>
 
-[احجز جلستك الاستشارية اليوم](https://store.pyraai.cloud/product/reel-studio/) · [رخصة MIT](LICENSE) · [تراخيص الأدوات الخارجية](NOTICE.md)
+[رخصة MIT](LICENSE) · [تراخيص الأدوات الخارجية](NOTICE.md)
 
 </div>

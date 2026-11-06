@@ -33,7 +33,7 @@ const panelsPlugin = {
   },
 };
 
-export const indexHtml = ({ title = 'Review Editor' } = {}) => `<!doctype html>
+export const indexHtml = ({ title = "Yasar's Reel Studio — Editor" } = {}) => `<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">

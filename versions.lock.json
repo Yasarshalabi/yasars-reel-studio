@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "edition": "4.0.1",
+  "edition": "4.1.0",
   "engine": "1.5.0",
   "node": {
     "version": "22.20.0",
@@ -922,5 +922,38 @@
       "license": "Each package's own license file",
       "homepage": "https://www.npmjs.com"
     }
-  ]
+  ],
+  "macos": {
+    "arch": "arm64",
+    "node": {
+      "version": "22.20.0",
+      "file": "node-v22.20.0-darwin-arm64.tar.gz",
+      "url": "https://nodejs.org/dist/v22.20.0/node-v22.20.0-darwin-arm64.tar.gz",
+      "checksums": "https://nodejs.org/dist/v22.20.0/SHASUMS256.txt",
+      "license": "MIT",
+      "homepage": "https://nodejs.org"
+    },
+    "ffmpeg": {
+      "version": "9.0.2",
+      "build": "1789931890_9.0.2",
+      "ffmpeg": "https://ffmpeg.martin-riedl.de/download/macos/arm64/1789931890_9.0.2/ffmpeg.zip",
+      "ffprobe": "https://ffmpeg.martin-riedl.de/download/macos/arm64/1789931890_9.0.2/ffprobe.zip",
+      "checksumSuffix": ".sha256",
+      "license": "GPL-3.0",
+      "homepage": "https://ffmpeg.martin-riedl.de"
+    },
+    "whisper": {
+      "release": "b4938",
+      "repo": "https://github.com/ggml-org/whisper.cpp.git",
+      "commit": "371b5a7561823ab2bb32142d2751e35e7534727b",
+      "cmake": "3.31.6",
+      "license": "MIT",
+      "homepage": "https://github.com/ggml-org/whisper.cpp"
+    },
+    "browser": {
+      "verification": "recorded-on-first-install",
+      "license": "BSD-3-Clause (Chromium) and bundled third-party licenses",
+      "homepage": "https://developer.chrome.com/blog/chrome-headless-shell"
+    }
+  }
 }

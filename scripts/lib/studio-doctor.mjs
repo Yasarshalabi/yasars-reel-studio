@@ -6,6 +6,7 @@ import {isStoreEdition} from './studio-git.mjs';
 import {browserHomeProblem} from './studio-setup.mjs';
 import {STEP_IDS, readSetupState} from './studio-state.mjs';
 import {checkEngineDependencies} from './engine-dependencies.mjs';
+import {IS_MAC, browserExecutableRelative, exe} from './platform.mjs';
 
 export const CHECK_LABELS = Object.freeze({
   platform: 'نوع الجهاز (لازم ويندوز 64-bit)',
@@ -80,13 +81,13 @@ export async function quickChecks(root, {lock, gitExe, readProfile, runsTool = t
   const store = isStoreEdition(root);
   const finished = state.status === 'done' && STEP_IDS.every((id) => state.steps?.[id]?.ok === true);
   const checks = {
-    platform: {ok: process.platform === 'win32' && process.arch === 'x64', actual: `${process.platform} ${process.arch}`},
+    platform: {ok: (process.platform === 'win32' && process.arch === 'x64') || (process.platform === 'darwin' && process.arch === 'arm64'), actual: `${process.platform} ${process.arch}`},
     node: {ok: major > 22 || (major === 22 && minor >= 20), actual: process.versions.node},
     location: {ok: misplaced === null, error: misplaced},
     setup: {ok: finished, actual: state.status === 'done' && !finished ? 'incomplete' : state.status},
     packages: await checkEngineDependencies(root),
-    browser: {ok: (await exists(at(`engine/node_modules/.remotion/${lock.browser.exe}`))) && (await exists(at(`.remotion/${lock.browser.exe}`)))},
-    ffmpeg: {ok: runsTool(at('Tools/bin/ffmpeg.exe')) && runsTool(at('Tools/bin/ffprobe.exe'))},
+    browser: {ok: (await exists(at(`engine/node_modules/.remotion/${IS_MAC ? browserExecutableRelative() : lock.browser.exe}`))) && (await exists(at(`.remotion/${IS_MAC ? browserExecutableRelative() : lock.browser.exe}`)))},
+    ffmpeg: {ok: runsTool(at(`Tools/bin/${exe('ffmpeg')}`)) && runsTool(at(`Tools/bin/${exe('ffprobe')}`))},
     fonts: {ok: false, missing: []},
     glyphs: {ok: true, warnOnly: true, skipped: true, missing: [], unreadable: []},
     models: {ok: false, missing: []},

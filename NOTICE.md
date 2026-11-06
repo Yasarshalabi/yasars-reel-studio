@@ -1,5 +1,9 @@
 # Third-party notices
 
+Yasar's Reel Studio is based on [Reel Studio](https://github.com/mohamedabdou-ai/reel-studio) by Mohamed Abdou. Both are released under the MIT License (see `LICENSE`, which keeps the original copyright notice).
+
+On macOS, setup downloads FFmpeg 9.0.2 (GPL-3.0) from Martin Riedl's FFmpeg build server (https://ffmpeg.martin-riedl.de), Node.js for Apple Silicon (MIT) from https://nodejs.org when Node is missing, CMake (BSD-3-Clause) from PyPI into `Tools/buildenv`, and builds whisper.cpp (MIT) from its pinned source commit. Windows downloads are listed below.
+
 Reel Studio's own code is released under the MIT License (see `LICENSE`). The tools below are not part of this repository: `node scripts/studio.mjs setup` downloads them into this folder from their official sources, each pinned to a SHA-256 in `versions.lock.json`. Each keeps its own license.
 
 ## Downloaded by setup

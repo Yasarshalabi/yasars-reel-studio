@@ -3,31 +3,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>إعداداتك — Reel Studio</title>
+  <meta name="color-scheme" content="dark">
+  <title>إعداداتك — Yasar's Reel Studio</title>
   <link rel="stylesheet" href="/fonts.css?token=__TOKEN__" id="font-styles">
   <link rel="stylesheet" href="/app.css?token=__TOKEN__">
   <script type="module" src="/app.js?token=__TOKEN__"></script>
 </head>
 <body>
   <div class="shell">
-    <aside class="sidebar" aria-label="خطوات الإعداد">
-      <a class="logo" href="?token=__TOKEN__" aria-label="Reel Studio"><span class="logo-mark" aria-hidden="true">R</span><span dir="ltr">REEL STUDIO<small>أسلوبك. في كل فيديو.</small></span></a>
-      <div class="sidebar-intro"><span class="eyebrow">مساحتك الإبداعية</span><h1>خلّي الاستوديو<br>يفهم ذوقك.</h1><p>اختيارات بسيطة، تتحفظ لك.<br>وكل فيديو ياخد حقه.</p></div>
-      <nav id="steps"></nav>
-      <a class="support-link" href="https://store.pyraai.cloud/product/reel-studio/" target="_blank" rel="noopener noreferrer" aria-label="احجز جلستك الاستشارية اليوم: جلسة خاصة اختيارية ومدفوعة، تفتح في صفحة جديدة"><span class="support-icon" aria-hidden="true">✦</span><span><strong>احجز جلستك الاستشارية اليوم</strong><small>جلسة خاصة اختيارية ومدفوعة ↗</small></span></a>
-      <div class="privacy-note"><span aria-hidden="true">◉</span><p>إعداداتك على جهازك.<br>تقدر ترجع تغيّرها في أي وقت.</p></div>
+    <header class="topbar">
+      <a class="brand" href="?token=__TOKEN__" aria-label="Yasar's Reel Studio">
+        <span class="brand-mark" aria-hidden="true"><i></i></span>
+        <span class="brand-name" dir="ltr">Yasar's <b>Reel Studio</b></span>
+      </a>
+      <span class="who" id="user-label">إعداد الاستوديو</span>
+      <span class="local-badge"><span aria-hidden="true"></span><span id="local-label">على جهازك فقط</span></span>
       <span class="edition" id="edition" dir="ltr"></span>
-    </aside>
-    <main>
-      <header class="topbar"><span id="user-label">إعداد الاستوديو</span><span class="local-badge"><span aria-hidden="true"></span>على جهازك</span></header>
-      <div class="workspace">
-        <div class="step-meta"><span id="step-number"></span><span id="save-state">جاهز لاختياراتك</span></div>
-        <section id="content" aria-labelledby="page-title"><p>بنفتح إعداداتك…</p></section>
-        <div id="error" class="error" role="alert" hidden></div>
-        <footer id="actions" class="actions"></footer>
-      </div>
+    </header>
+    <nav class="rail" aria-label="Steps">
+      <div class="rail-track" id="steps"></div>
+    </nav>
+    <main class="workspace">
+      <div class="step-meta"><span id="step-number"></span><span id="save-state">جاهز لاختياراتك</span></div>
+      <section id="content" aria-labelledby="page-title"><p>نفتح إعداداتك…</p></section>
+      <div id="error" class="error" role="alert" hidden></div>
     </main>
+    <footer id="actions" class="actions"></footer>
   </div>
-  <noscript>الشاشة محتاجة JavaScript. خلي المساعد يساعدك تفعّله أو يظبط الإعدادات معاك في المحادثة.</noscript>
+  <noscript>This screen needs JavaScript. Ask the assistant to set your preferences with you in the chat instead. — هذه الشاشة تحتاج JavaScript. اطلب من المساعد ضبط إعداداتك معك في المحادثة.</noscript>
 </body>
 </html>

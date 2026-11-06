@@ -24,7 +24,7 @@ if (process.argv.includes('--history')) {
     extraIssues.push(...scanPublicationFile('history/commit-' + commit + '.md', Buffer.from(message)));
     for (const field of ['author', 'committer']) {
       const email = new RegExp('^' + field + ' .* <([^>]+)>', 'm').exec(header)?.[1];
-      if (!email || !/^(?:[^@]+@users\.noreply\.github\.com|noreply@github\.com)$/.test(email)) extraIssues.push({file: 'history/' + commit, line: 1, rule: 'personal ' + field + ' email'});
+      if (!email || !/^(?:[^@]+@users\.noreply\.github\.com|noreply@github\.com|noreply@anthropic\.com)$/.test(email)) extraIssues.push({file: 'history/' + commit, line: 1, rule: 'personal ' + field + ' email'});
     }
   }
   const unique = [...new Set([...entries.values()].map((item) => item.sha))];
@@ -40,7 +40,7 @@ if (process.argv.includes('--history')) {
     const raw = git(['cat-file', 'tag', sha], {encoding: 'utf8'}), split = raw.indexOf('\n\n'), header = raw.slice(0, split), message = raw.slice(split + 2);
     extraIssues.push(...scanPublicationFile('history/tag-' + sha + '.md', Buffer.from(message)));
     const email = /^tagger .* <([^>]+)>/m.exec(header)?.[1];
-    if (!email || !/^(?:[^@]+@users\.noreply\.github\.com|noreply@github\.com)$/.test(email)) extraIssues.push({file: 'history/tag-' + sha, line: 1, rule: 'personal tagger email'});
+    if (!email || !/^(?:[^@]+@users\.noreply\.github\.com|noreply@github\.com|noreply@anthropic\.com)$/.test(email)) extraIssues.push({file: 'history/tag-' + sha, line: 1, rule: 'personal tagger email'});
   }
 } else {
   const paths = git(['ls-files', '-z', '--cached', '--others', '--exclude-standard'], {encoding: 'utf8'}).split('\0').filter(Boolean);

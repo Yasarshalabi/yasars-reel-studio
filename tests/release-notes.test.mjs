@@ -61,7 +61,7 @@ test('release text is White Arabic: no Egyptian-dialect markers in the new entry
 
 test('README header, navigation and new-section heading follow the locked edition', () => {
   const [major, minor] = parts(lock().edition), readme = read('README.md');
-  assert.ok(readme.includes(`>Reel Studio ${major}.${minor} `), 'header');
+  assert.ok(readme.includes(`>Yasar's Reel Studio ${major}.${minor} `), 'header');
   assert.ok(readme.includes(`<a href="#whats-new">الجديد في ${major}.${minor}</a>`), 'navigation');
   assert.ok(readme.includes(`## الجديد في ${major}.${minor}:`), 'section heading');
   assert.equal((readme.match(/<a id="whats-new"><\/a>/g) ?? []).length, 1, 'one current anchor');
@@ -70,7 +70,7 @@ test('README header, navigation and new-section heading follow the locked editio
 // Reads the version printed in each place, so a stale header cannot hide behind a correct mention elsewhere.
 test('the README header, navigation link and current heading all carry the locked major.minor', () => {
   const [major, minor] = parts(lock().edition), expected = `${major}.${minor}`, readme = read('README.md');
-  const header = /<h1 align="center">Reel Studio (\d+\.\d+) 🎬<\/h1>/.exec(readme)?.[1];
+  const header = /<h1 align="center">Yasar's Reel Studio (\d+\.\d+) 🎬<\/h1>/.exec(readme)?.[1];
   const navigation = /<a href="#whats-new">الجديد في (\d+\.\d+)<\/a>/.exec(readme)?.[1];
   const heading = /^## الجديد في (\d+\.\d+)(?::|$)/m.exec(currentSection())?.[1];
   assert.equal(header, expected, `header says ${header}`);
@@ -118,54 +118,20 @@ test('the release files pass the publication policy', () => {
   }
 });
 
-const THANKS = 'شكرًا إنك نزّلت Reel Studio 🙏 الاستوديو بيبلّغني بإشارة صغيرة إن التثبيت نجح وإنك بتستخدمه، ومعاها رقم الإصدار. مفيش اسمك ولا فيديوهاتك ولا أي ملف من جهازك. الإشارة دي بتفرّحني وبتساعدني أعرف إن التحديثات بتوصلكم وشغالة.';
-
-test('first-run setup ends with the thank-you line before the ready line', () => {
+// Yasar's Reel Studio: no maker telemetry, no paid-session links, and the ready line closes first-run setup.
+test('first-run setup ends with the ready line and carries no maker telemetry notice', () => {
   const setup = read('instructions/SETUP.md');
-  const thanks = setup.indexOf(`«${THANKS}»`), ready = setup.indexOf('«كده الاستوديو جاهز.');
-  assert.ok(thanks > 0, 'SETUP.md quotes the thank-you line exactly');
-  assert.ok(ready > thanks, 'the thank-you line comes first');
+  assert.ok(setup.includes('8. End with the ready line'), 'SETUP.md ends first run with the ready line');
+  assert.equal(/store\.pyraai\.cloud/.test(setup), false);
 });
 
-const SUPPORT_URL = 'https://store.pyraai.cloud/product/reel-studio/';
-const SUPPORT_LABEL = 'احجز جلستك الاستشارية اليوم';
-// Every placement says the session is optional and paid, so it never reads as free support.
-const OPTIONAL_PAID = /اختيارية[^\n]{0,20}(?:مدفوعة|تُدفع)|مدفوعة[^\n]{0,5}واختيارية/;
-
-test('README links to support sessions at the start, in the FAQ, when setup stops and in the footer', () => {
-  const readme = read('README.md'), link = `[${SUPPORT_LABEL}](${SUPPORT_URL})`;
-  const hero = readme.slice(0, readme.indexOf('<a id="start"></a>'));
-  assert.ok(hero.includes(`<a href="${SUPPORT_URL}">`) && hero.includes(SUPPORT_LABEL), 'start of the page');
-  assert.match(hero, OPTIONAL_PAID);
-  const faq = readme.slice(readme.indexOf('## أسئلة سريعة'), readme.indexOf('## أدلة للمساعد'));
-  const entries = faq.split('<details>').slice(1);
-  const help = entries.find(entry => entry.includes('تحتاج مساعدة مباشرة'));
-  assert.ok(help?.includes(link), 'its own FAQ entry');
-  assert.match(help, OPTIONAL_PAID);
-  assert.deepEqual(dialectIn(help.replace(/<[^>]+>/g, '')), []);
-  const stopped = entries.find(entry => entry.includes('التجهيز وقف'));
-  assert.ok(stopped?.includes(link), 'the setup-stopped answer');
-  assert.match(stopped, OPTIONAL_PAID);
-  assert.ok(readme.slice(readme.lastIndexOf('\n---\n')).includes(link), 'the footer');
+test('the settings screen and README carry no paid-session or store links', () => {
+  for (const file of ['scripts/settings-ui/index.html', 'scripts/settings-ui/app.js', 'README.md']) assert.equal(/store\.pyraai\.cloud/.test(read(file)), false, file);
 });
 
-test('the install thank-you and the settings screen offer the support link', () => {
-  const setup = read('instructions/SETUP.md');
-  const thanks = setup.indexOf(`«${THANKS}»`), support = setup.indexOf(`${SUPPORT_LABEL}: ${SUPPORT_URL}»`), ready = setup.indexOf('«كده الاستوديو جاهز.');
-  assert.ok(thanks > 0 && support > thanks && ready > support, 'support line sits between the thank-you and ready lines');
-  assert.match(setup.slice(thanks + THANKS.length, support), OPTIONAL_PAID);
-  const html = read('scripts/settings-ui/index.html');
-  const anchor = html.match(/<a class="support-link"[^>]*>/)?.[0];
-  assert.ok(anchor, 'settings sidebar has the support link');
-  for (const attribute of [`href="${SUPPORT_URL}"`, 'target="_blank"', 'rel="noopener noreferrer"']) assert.ok(anchor.includes(attribute), attribute);
-  assert.ok(html.includes(`<strong>${SUPPORT_LABEL}</strong>`));
-  assert.match(html.slice(html.indexOf('class="support-link"')), OPTIONAL_PAID);
-});
-
-test('README explains the install counter in White Arabic', () => {
-  const readme = read('README.md'), at = readme.indexOf('يرسل الاستوديو إشارة صغيرة');
-  assert.ok(at > 0, 'README has the counter paragraph');
+test('README says the studio sends no usage signals, in White Arabic', () => {
+  const readme = read('README.md'), at = readme.indexOf('الاستوديو لا يرسل أي إشارة استخدام');
+  assert.ok(at > 0, 'README states there is no usage signal');
   const paragraph = readme.slice(readme.lastIndexOf('\n\n', at), readme.indexOf('\n\n', at));
-  for (const fact of ['رقم الإصدار', 'رمز عشوائي', 'فيديوهات', 'ملفات']) assert.ok(paragraph.includes(fact), fact);
   assert.deepEqual(dialectIn(paragraph), []);
 });

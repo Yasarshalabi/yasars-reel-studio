@@ -200,7 +200,7 @@ const Shell: React.FC<{ initialProject: ProjectResponse }> = ({ initialProject }
     }
   };
 
-  useEffect(() => { document.title = `${dirty ? "● " : ""}${project.slug} · Review Editor`; }, [dirty, project.slug]);
+  useEffect(() => { document.title = `${dirty ? "● " : ""}${project.slug} · Yasar's Reel Studio`; }, [dirty, project.slug]);
   useEffect(() => { remember.set("guides", guides); }, [guides]);
 
 

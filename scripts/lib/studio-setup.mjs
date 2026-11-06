@@ -5,6 +5,7 @@ import path from 'node:path';
 import {resolveNpmCommand} from './npm-command.mjs';
 import {downloadVerified, sha256File} from './studio-download.mjs';
 import {checkEngineDependencies, dependencyProblem, moduleDirectoryProblem} from './engine-dependencies.mjs';
+import {IS_MAC, browserExecutableRelative, exe} from './platform.mjs';
 
 
 
@@ -30,7 +31,8 @@ export function browserHomeProblem(root) {
   const home = remotionBrowserHome(root);
   if (home.toLowerCase() === path.join(path.resolve(root), BROWSER_HOMES.root).toLowerCase()) return null;
   const owner = path.dirname(path.dirname(home));
-  return `فيه package.json في ${owner} فوق فولدر الاستوديو، فالرندر هيدوّر على المتصفح برّه الفولدر. انقل فولدر الاستوديو لمكان مفيهوش package.json فوقه (مثلًا D:\\ReelStudio) وبعدين شغّل setup تاني.`;
+  const example = IS_MAC ? '~/Yasars-Reel-Studio' : 'D:\\ReelStudio';
+  return `فيه package.json في ${owner} فوق فولدر الاستوديو، فالرندر رح يدوّر على المتصفح برّا الفولدر. انقل فولدر الاستوديو لمكان ما فوقه package.json (مثلًا ${example}) وبعدين شغّل setup مرة ثانية.`;
 }
 
 export function runProcess(command, args, {cwd, timeoutMs = STEP_TIMEOUT_MS}) {
@@ -72,7 +74,11 @@ export function setupSteps(root, lock) {
   const at = (relative) => path.join(root, ...relative.split('/'));
   const ffmpegArchive = at(`state/cache/downloads/ffmpeg-${lock.ffmpeg.version}-full_build.7z`);
   const engine = at('engine');
-  const browserOk = async (home) => (await sha256File(at(`${BROWSER_HOMES[home]}/${lock.browser.exe}`))) === lock.browser.exeSha256;
+  // Windows pins the browser binary's SHA-256; on macOS Remotion fetches its tested build and the hash is recorded on first install.
+  const browserExe = IS_MAC ? browserExecutableRelative() : lock.browser.exe;
+  const browserRecord = at('Tools/browser-install.json');
+  const expectedBrowserSha = async () => IS_MAC ? (await fs.readFile(browserRecord, 'utf8').then(JSON.parse).catch(() => null))?.exeSha256 ?? null : lock.browser.exeSha256;
+  const browserOk = async (home) => { const expected = await expectedBrowserSha(); const actual = await sha256File(at(`${BROWSER_HOMES[home]}/${browserExe}`)); return actual !== null && (expected === null ? IS_MAC && home === 'engine' : actual === expected); };
   const browserDir = (home) => at(`${BROWSER_HOMES[home]}/chrome-headless-shell`);
   const writeOnce = (file, text) => fs.writeFile(file, text, {encoding: 'utf8', flag: 'wx'}).catch((error) => { if (error.code !== 'EEXIST') throw error; });
   const assertPackagesLocal = async () => {
@@ -108,7 +114,7 @@ export function setupSteps(root, lock) {
     },
     {
       id: 'browser',
-      key: async () => `${lock.browser.version}:${lock.browser.exeSha256}`,
+      key: async () => IS_MAC ? `mac:${lock.browser.remotion}` : `${lock.browser.version}:${lock.browser.exeSha256}`,
       verify: async () => browserHomeProblem(root) === null && (await browserOk('engine')) && (await browserOk('root')),
       run: async (log) => {
         const problem = browserHomeProblem(root);
@@ -120,6 +126,10 @@ export function setupSteps(root, lock) {
         if (!(await browserOk('engine'))) {
           log('browser: Remotion ensureBrowser in engine/');
           await runProcess(process.execPath, ['-e', ENSURE_BROWSER], {cwd: engine});
+          if (IS_MAC) {
+            const exeSha256 = await sha256File(at(`${BROWSER_HOMES.engine}/${browserExe}`));
+            if (exeSha256) await fs.writeFile(browserRecord, `${JSON.stringify({schema: 1, platform: 'mac-arm64', remotion: lock.browser.remotion, exe: browserExe, exeSha256, recordedAt: new Date().toISOString()}, null, 2)}\n`, 'utf8');
+          }
         }
         if (!(await browserOk('engine'))) {
           await fs.rm(browserDir('engine'), {recursive: true, force: true});
@@ -130,15 +140,19 @@ export function setupSteps(root, lock) {
     },
     {
       id: 'ffmpeg',
-      key: async () => lock.ffmpeg.sha256,
+      key: async () => IS_MAC ? `mac:${lock.macos.ffmpeg.build}` : lock.ffmpeg.sha256,
       verify: async () => {
         const report = await fs.readFile(at('Tools/bin/ffmpeg-install.json'), 'utf8').then(JSON.parse).catch(() => null);
-        return report?.ok === true && report.archiveSha256 === lock.ffmpeg.sha256
-          && (await exists(at('Tools/bin/ffmpeg.exe'))) && (await exists(at('Tools/bin/ffprobe.exe')));
+        const pinned = IS_MAC ? report?.platform === 'macos-arm64' && report.build === lock.macos.ffmpeg.build : report?.archiveSha256 === lock.ffmpeg.sha256;
+        return report?.ok === true && pinned
+          && (await exists(at(`Tools/bin/${exe('ffmpeg')}`))) && (await exists(at(`Tools/bin/${exe('ffprobe')}`)));
       },
       run: async (log) => {
-
-
+        if (IS_MAC) {
+          log('ffmpeg: Apple Silicon build, checked against the publisher SHA-256');
+          await runProcess(process.execPath, [at('scripts/install-ffmpeg-mac.mjs')], {cwd: root});
+          return;
+        }
         await downloadVerified({url: lock.ffmpeg.url, sha256: lock.ffmpeg.sha256, bytes: lock.ffmpeg.bytes, target: ffmpegArchive});
         log('ffmpeg: archive verified, extracting');
         await runProcess(process.execPath, [at('scripts/install-ffmpeg.mjs')], {cwd: root});
@@ -175,8 +189,8 @@ export function setupSteps(root, lock) {
       // Loaded on first use, so status and the settings screen stay light and setup still starts before npm ci.
       id: 'transcription',
       key: async () => hashOf(JSON.stringify(lock.transcription)),
-      verify: async () => (await import('./transcription-install.mjs')).verifyPinnedWhisper(lock.transcription, {root}),
-      run: async (log) => { await (await import('./transcription-install.mjs')).installPinnedWhisper(lock.transcription, {root, log}); },
+      verify: async () => (await import('./transcription-install.mjs')).verifyPinnedWhisper(lock.transcription, {root, mac: IS_MAC ? lock.macos.whisper : null}),
+      run: async (log) => { await (await import('./transcription-install.mjs')).installPinnedWhisper(lock.transcription, {root, log, mac: IS_MAC ? lock.macos.whisper : null}); },
     },
   ];
 }

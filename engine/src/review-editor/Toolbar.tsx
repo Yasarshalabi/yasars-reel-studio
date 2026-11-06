@@ -53,6 +53,7 @@ export const Toolbar: React.FC<Props> = ({ project, validation, pending, saving,
   return (
     <header className="rv-toolbar">
       <div className="rv-toolbar-title">
+        <span className="rv-brand" dir="ltr" aria-label="Yasar's Reel Studio"><span className="rv-brand-mark" aria-hidden="true" /><span>Yasar's <b>Reel Studio</b></span></span>
         <strong>{project.slug}</strong>
         <span className="rv-dim rv-path" dir="ltr">{project.manifestPath}</span>
         {dirty ? <span className="chip warn">فيه تعديلات مش متسيّفة</span> : <span className="chip ok">{lastSavedAt ? `متسيّف ${timeOfDay(lastSavedAt)}` : "متسيّف"}</span>}

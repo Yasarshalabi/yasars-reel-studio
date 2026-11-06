@@ -10,7 +10,7 @@ export const STORE_FAREWELL = 'نسخة المتجر لم تعد تُحدَّث�
 export const isStoreEdition = (root) => existsSync(path.join(root, STORE_MARKER));
 
 export function resolveGit(root) {
-  for (const candidate of ['git', path.join(root, 'Tools', 'git', 'cmd', 'git.exe')]) {
+  for (const candidate of ['git', ...(process.platform === 'win32' ? [path.join(root, 'Tools', 'git', 'cmd', 'git.exe')] : [])]) {
     if (spawnSync(candidate, ['--version'], {stdio: 'ignore', windowsHide: true}).status === 0) return candidate;
   }
   return null;

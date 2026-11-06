@@ -86,7 +86,7 @@ test('the screen writes the digits state as fixed or no key, opens a missing key
   const labels = new Function(`return ${/const digitLabels = (\{[^;]*\});/.exec(app)?.[1]}`)();
   assert.deepEqual(labels, {...DIGIT_LABELS_AR}, 'the screen and the editor share the same three strings');
   assert.ok(app.includes("'الخطوط والأرقام'"), 'step 4 is fonts and digits');
-  assert.ok(app.includes("['الأرقام',"), 'the summary has a digits row');
+  assert.ok(app.includes("sumDigits: 'الأرقام'") && app.includes("[t('sumDigits'),"), 'the summary has a digits row');
   assert.ok(app.includes('delete draft.preferences.digits'), 'automatic removes the key');
   assert.ok(app.includes("draft.preferences.digits = {mode: 'fixed', value}"), 'a fixed choice is written with its value');
   assert.ok(app.includes("draft.preferences.digits ??= {mode: 'auto', value: null}"), 'a missing key means automatic on load');

@@ -1,4 +1,5 @@
 import './project-tmp.mjs';
+import { exe, IS_MAC } from './platform.mjs';
 import fs from 'node:fs';
 import { promises as fsp } from 'node:fs';
 import path from 'node:path';
@@ -21,10 +22,20 @@ const number = (value, name, min, max, fallback) => {
   return parsed;
 };
 
+// The creator's PROFILE.json language decides what whisper listens for when --lang is not given: Arabic for every
+// Arabic dialect, English for an English profile. No profile yet: Arabic, as before.
+export function profileTranscriptionLanguage(root = ROOT) {
+  try {
+    const profile = JSON.parse(fs.readFileSync(path.join(root, 'PROFILE.json'), 'utf8').replace(/^\ufeff/, ''));
+    return profile?.language === 'en' ? 'en' : 'ar';
+  } catch { return 'ar'; }
+}
+
 export function normalizeTranscriptionOptions(args) {
   for (const key of Object.keys(args)) if (!OPTIONS.has(key)) throw new Error(`Unknown option --${key}. Dialogue transformations are unsupported.`);
   if (typeof args.media !== 'string' || !args.media.trim()) throw new Error('--media must name an existing source file.');
-  if (args.backend !== undefined && args.backend !== 'cpu') throw new Error('Only the verified CPU backend is supported.');
+  const backend = args.backend ?? (IS_MAC ? 'metal' : 'cpu');
+  if (!(backend === 'cpu' || (backend === 'metal' && IS_MAC))) throw new Error('Supported backends: cpu, or metal on macOS (Apple Silicon GPU).');
   if (args.timing !== undefined && !['token', 'dtw'].includes(args.timing)) throw new Error('--timing accepts token or dtw.');
   if (args.vad !== undefined && ![true, false, 'on', 'off'].includes(args.vad)) throw new Error('--vad accepts on or off.');
   const chunkMs = Math.round(number(args['chunk-seconds'], 'chunk-seconds', 2, 30, DEFAULT_CHUNK_MS / 1000) * 1000);
@@ -34,10 +45,10 @@ export function normalizeTranscriptionOptions(args) {
   const durationMs = args.duration === undefined ? null : Math.round(number(args.duration, 'duration', 0.1, 86400, 1) * 1000);
   const threads = number(args.threads, 'threads', 1, 12, 4);
   if (!Number.isInteger(threads)) throw new Error('--threads must be an integer.');
-  const language = args.lang ?? 'ar';
+  const language = args.lang ?? profileTranscriptionLanguage();
   if (typeof language !== 'string' || !/^(auto|[a-z]{2,3})$/i.test(language)) throw new Error('Invalid language code.');
   if (args.out !== undefined && typeof args.out !== 'string') throw new Error('--out requires a project-local directory.');
-  return { media: path.resolve(args.media), outDir: args.out === undefined ? null : assertTranscriptionOutputPath(args.out), model: args.model ?? 'medium', language: language.toLowerCase(), startMs, durationMs, chunkMs, overlapMs, threads, timing: args.timing ?? 'token', vad: args.vad === true || args.vad === 'on', force: args.force === true, backend: 'cpu' };
+  return { media: path.resolve(args.media), outDir: args.out === undefined ? null : assertTranscriptionOutputPath(args.out), model: args.model ?? 'medium', language: language.toLowerCase(), startMs, durationMs, chunkMs, overlapMs, threads, timing: args.timing ?? 'token', vad: args.vad === true || args.vad === 'on', force: args.force === true, backend };
 }
 
 export async function readTranscriptionChunk(directory, identity) {
@@ -86,7 +97,7 @@ async function probeAudio(ffprobe, media) {
 export function whisperArguments({ options, runtime, model, wav, outputPrefix }) {
 
 
-  const args = ['-m', model.path, '-f', wav, '-l', options.language, '-t', String(options.threads), '--no-gpu', '--no-flash-attn', '--output-json-full', '--output-file', outputPrefix, '--max-len', '1', '--split-on-word'];
+  const args = ['-m', model.path, '-f', wav, '-l', options.language, '-t', String(options.threads), ...(options.backend === 'metal' ? [] : ['--no-gpu']), '--no-flash-attn', '--output-json-full', '--output-file', outputPrefix, '--max-len', '1', '--split-on-word'];
   if (options.timing === 'dtw') args.push('--dtw', options.model.replaceAll('-', '.'));
   if (options.vad) args.push('--vad', '--vad-model', runtime.vad.path);
   return args;
@@ -141,8 +152,8 @@ export async function transcribeMedia(args, { onProgress = message => console.er
   let runtime;
   try { runtime = JSON.parse(await fsp.readFile(WHISPER_RUNTIME_FILE, 'utf8')); } catch { throw new Error('Transcription is not installed yet. Run node scripts/studio.mjs setup; it installs only what is missing.'); }
   const toolsDir = path.join(ROOT, 'Tools', 'bin');
-  const ffmpeg = path.join(toolsDir, 'ffmpeg.exe'), ffprobe = path.join(toolsDir, 'ffprobe.exe');
-  if (!fs.existsSync(ffmpeg) || !fs.existsSync(ffprobe)) throw new Error('Project-local Tools/bin/ffmpeg.exe and ffprobe.exe are required.');
+  const ffmpeg = path.join(toolsDir, exe('ffmpeg')), ffprobe = path.join(toolsDir, exe('ffprobe'));
+  if (!fs.existsSync(ffmpeg) || !fs.existsSync(ffprobe)) throw new Error('Project-local Tools/bin/ffmpeg and ffprobe are required. Run node scripts/studio.mjs setup.');
   onProgress('Hashing source and model; checking the installed CPU runtime.');
   const [sourceSha256, model, actualRuntime, audioProbe, ffmpegSha256] = await Promise.all([
     sha256File(source), resolveWhisperModel(options.model), inspectWhisperRuntime(runtime.directory, { expectedBinaryFiles: runtime.binaryFiles }), probeAudio(ffprobe, source), sha256File(ffmpeg),
@@ -158,7 +169,7 @@ export async function transcribeMedia(args, { onProgress = message => console.er
   const codeIdentity = await transcriptionCodeIdentity();
   const decodeIdentity = {
     sourceSha256, modelSha256: model.sha256, runtimeSha256: transcriptionCacheKey(actualRuntime.binaryFiles), ffmpegSha256,
-    options: { model: options.model, language: options.language, threads: options.threads, backend: 'cpu', timing: options.timing, flashAttention: false, maxLength: 1, splitOnWord: true, vad: options.vad, vadSha256 },
+    options: { model: options.model, language: options.language, threads: options.threads, backend: options.backend ?? 'cpu', timing: options.timing, flashAttention: false, maxLength: 1, splitOnWord: true, vad: options.vad, vadSha256 },
     ...codeIdentity.decode,
   };
 
@@ -194,7 +205,7 @@ export async function transcribeMedia(args, { onProgress = message => console.er
     confidence: { method: 'minimum token probability within each word', calibrated: false, reviewThreshold: 0.6 },
     timeBasis: 'absolute milliseconds from the original source; --start never resets captions to zero',
     source: { path: source, sha256: sourceSha256, audioDurationMs: audioProbe.durationMs, selectedStartMs: options.startMs, selectedDurationMs: duration },
-    runtime: { releaseTag: runtime.releaseTag, binaryVersion: runtime.binaryVersion, executable: runtime.executable, model: options.model, modelPath: model.path, modelSha256: model.sha256, threads: options.threads, timingMethod: options.timing === 'dtw' ? 'whisper-dtw' : 'whisper-token-estimates', backend: 'cpu', systemInfo,
+    runtime: { releaseTag: runtime.releaseTag, binaryVersion: runtime.binaryVersion, executable: runtime.executable, model: options.model, modelPath: model.path, modelSha256: model.sha256, threads: options.threads, timingMethod: options.timing === 'dtw' ? 'whisper-dtw' : 'whisper-token-estimates', backend: options.backend ?? 'cpu', systemInfo,
       openvinoCompiled: systemInfo.some(info => /OPENVINO\s*=\s*1/.test(info)),
       openvinoActivated: false, vad: options.vad, vadModelSha256: vadSha256 },
     cacheKey, chunks: results.map(result => ({ ...result.chunk, cached: result.cached, elapsedMs: result.elapsedMs, rawFile: result.rawFile, logFile: result.logFile, audioFile: result.audioFile })),

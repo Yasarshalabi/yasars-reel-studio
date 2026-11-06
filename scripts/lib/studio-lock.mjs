@@ -72,6 +72,14 @@ export function validateLock(lock) {
     if (!SHA256.test(font?.sha256 ?? '')) problems.push(`${name}.sha256 must be 64 lowercase hex characters`);
     if (!Number.isInteger(font?.bytes) || font.bytes <= 0) problems.push(`${name}.bytes must be a positive integer`);
   }
+  const mac = lock.macos;
+  if (mac !== undefined) {
+    if (mac?.arch !== 'arm64') problems.push('macos.arch must be arm64');
+    if (!text(mac?.node?.version) || !https(mac?.node?.url) || !https(mac?.node?.checksums)) problems.push('macos.node needs version, url and checksums');
+    if (!text(mac?.ffmpeg?.version) || !text(mac?.ffmpeg?.build) || !https(mac?.ffmpeg?.ffmpeg) || !https(mac?.ffmpeg?.ffprobe) || mac?.ffmpeg?.checksumSuffix !== '.sha256') problems.push('macos.ffmpeg needs version, build, ffmpeg and ffprobe urls and checksumSuffix .sha256');
+    if (!/^b\d+$/.test(mac?.whisper?.release ?? '') || !/^[a-f0-9]{40}$/.test(mac?.whisper?.commit ?? '') || !https(mac?.whisper?.repo) || !SEMVER.test(mac?.whisper?.cmake ?? '')) problems.push('macos.whisper needs a build tag, a 40-character commit, an https repo and a CMake version');
+    for (const part of ['node', 'ffmpeg', 'whisper', 'browser']) checkSource(problems, `macos.${part}`, mac?.[part]);
+  }
   if (!Array.isArray(lock.notices)) problems.push('notices must be an array');
   for (const [index, notice] of (Array.isArray(lock.notices) ? lock.notices : []).entries()) {
     if (!text(notice?.name)) problems.push(`notices[${index}].name is missing`);

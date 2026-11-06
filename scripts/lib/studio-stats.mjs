@@ -3,7 +3,8 @@
 // not derived from the user or the machine), event, version and occurredAt. A stopped install adds `step` (one of STEP_IDS) and a
 // finished video adds `style` (a style id, or "other"); never names, handles, media, files or paths. The key that stops one
 // finished file from counting twice is a local hash kept in state/studio-stats.json and is never sent.
-// README (privacy) and the thank-you line at the end of setup tell the user. Network or local-state failures never affect the studio.
+// Yasar's Reel Studio sends nothing by default: there is no built-in endpoint. Recording starts only when the owner sets
+// REEL_STUDIO_STATS_ENDPOINT to an https URL they control. Network or local-state failures never affect the studio.
 // REEL_STUDIO_STATS accepts off, 0, false or no (trimmed, case-insensitive) to disable recording and sending completely.
 // QA installs (verify-clean-install) set it to off so they are not counted.
 import {createHash, randomUUID} from 'node:crypto';
@@ -11,7 +12,7 @@ import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import {STEP_IDS} from './studio-state.mjs';
 
-const ENDPOINT = 'https://store.pyraai.cloud/wp-json/reel-studio-stats/v1/events';
+const configuredEndpoint = () => { const url = process.env.REEL_STUDIO_STATS_ENDPOINT?.trim(); return url && url.startsWith('https://') ? url : null; };
 const MAX_AGE = 30 * 86400000;
 const MAX_DELIVERED = 1000;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
@@ -20,7 +21,7 @@ const SLUG = /^[a-z][a-z0-9-]{0,39}$/;
 const BASE_KEYS = ['schema', 'installationId', 'event', 'version', 'occurredAt'];
 // The one extra key each event may carry.
 const DETAIL_KEY = {installed: null, studio_used: null, setup_failed: 'step', reel_delivered: 'style'};
-const enabled = options => !['off', '0', 'false', 'no'].includes(process.env.REEL_STUDIO_STATS?.trim().toLowerCase()) && (options.endpoint || !(process.env.CI || process.env.NODE_TEST_CONTEXT));
+const enabled = options => !['off', '0', 'false', 'no'].includes(process.env.REEL_STUDIO_STATS?.trim().toLowerCase()) && (options.endpoint || (configuredEndpoint() !== null && !(process.env.CI || process.env.NODE_TEST_CONTEXT)));
 const nowOf = options => options.now ? options.now() : new Date();
 const keyOf = event => `${event.event}:${event.version}:${event.occurredAt}:${event.step ?? event.style ?? ''}`;
 const fileOf = root => path.join(root, 'state/studio-stats.json');
@@ -153,7 +154,7 @@ export async function flushStudioEvents(root, options = {}) {
       const body = JSON.stringify(payloadOf(pending));
       if (Buffer.byteLength(body) > 1024) continue;
       try {
-        const response = await fetch(options.endpoint ?? ENDPOINT, {method: 'POST', headers: {'content-type': 'application/json'}, body, signal, redirect: 'error'});
+        const response = await fetch(options.endpoint ?? configuredEndpoint(), {method: 'POST', headers: {'content-type': 'application/json'}, body, signal, redirect: 'error'});
         await response.body?.cancel();
         if (!response.ok) {
           // Proxy authentication (407) and misdirected routing (421) can recover without changing the event, so retain both.

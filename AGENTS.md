@@ -1,6 +1,21 @@
-# Reel Studio — instructions for the assistant
+# Yasar's Reel Studio — instructions for the assistant
 
-This is a local Windows 64-bit studio and the user's workspace. Run commands and edit project data yourself; the user makes creative decisions, not terminal or JSON edits. Speak concise Egyptian Arabic unless asked otherwise. Keep code and notes English UTF-8 without a BOM; visible text may follow the creator's language.
+This is a local studio for macOS (Apple Silicon) and Windows 64-bit, and the user's workspace. Run commands and edit project data yourself; the user makes creative decisions, not terminal or JSON edits. Keep code and notes English UTF-8 without a BOM; visible text follows the creator's language.
+
+## Language
+
+Speak the creator's language from `PROFILE.json` `language`, concisely:
+
+| `language` | Speak and write |
+| --- | --- |
+| `ar-JO` | Levantine Arabic (Jordanian/Palestinian everyday speech) |
+| `ar-EG` | Egyptian Arabic |
+| `ar-SA` | Gulf Arabic (Saudi/Emirati everyday speech) |
+| `ar-MA` | Maghrebi Arabic (Darija); switch to simple White Arabic when a term would be unclear |
+| `ar` | White Arabic: simple, neutral Arabic understood across the Arab world |
+| `en` | Friendly, plain English |
+
+Before a profile exists, answer in the language and dialect the user writes in. A request in another language for one reply or one video is honored without changing the profile. Command output lines printed in Arabic are relayed in the creator's language, keeping their meaning.
 
 ## Start and route the request
 

@@ -3,6 +3,7 @@ import {normalizeStyleId} from '../../engine/src/styles/registry.ts';
 import path from 'node:path';
 import {PREFERENCE_VALUES, defaultPreferences} from '../../engine/src/core/preference-options.ts';
 import {characterIssues, normalizeCharacter} from '../../engine/src/styles/cartoon/scenes/character.ts';
+import {LANGUAGE_CODES, isLanguageCode} from '../../engine/src/core/languages.ts';
 
 export const PROFILE_SCHEMA_VERSION = 3;
 export const PROFILE_FILE = 'PROFILE.json';
@@ -70,7 +71,7 @@ export function normalizeProfile(value) {
   exactKeys(profile, ['schemaVersion', 'name', 'handle', 'language', 'ending', 'brand', 'platforms', ...(profile.schemaVersion === 3 ? ['preferences'] : [])], 'البروفايل', 'profile');
   const name = text(profile.name, 80, 'الاسم', 'name');
   const handle = normalizeHandle(profile.handle);
-  if (profile.language !== 'ar-EG') fail('اللغة المدعومة دلوقتي ar-EG بس.', 'language must be "ar-EG".');
+  if (!isLanguageCode(profile.language)) fail(`اللغة لازم تكون وحدة من: ${LANGUAGE_CODES.join('، ')}.`, `language must be one of ${LANGUAGE_CODES.join(', ')}.`);
   const ending = record(profile.ending, 'اختيارات النهاية', 'ending');
   exactKeys(ending, ['followCard', 'ctaDefault', 'signOff'], 'اختيارات النهاية', 'ending');
   if (typeof ending.followCard !== 'boolean') fail('followCard لازم تكون true أو false.', 'ending.followCard must be true or false.');
@@ -81,7 +82,7 @@ export function normalizeProfile(value) {
   if (!Array.isArray(platforms) || !platforms.length || new Set(platforms).size !== platforms.length || platforms.some((p) => !PROFILE_PLATFORMS.includes(p))) {
     fail('اختار instagram أو tiktok أو youtube من غير تكرار.', 'platforms must be a non-empty list of "instagram", "tiktok" and/or "youtube" without repeats.');
   }
-  return {schemaVersion: PROFILE_SCHEMA_VERSION, name, handle, language: 'ar-EG',
+  return {schemaVersion: PROFILE_SCHEMA_VERSION, name, handle, language: profile.language,
     ending: {followCard: ending.followCard, ctaDefault, signOff}, brand: normalizeBrand(profile.brand), platforms: [...platforms],
     preferences: profile.schemaVersion === 2 ? defaultPreferences({legacy: true}) : normalizePreferences(profile.preferences)};
 }

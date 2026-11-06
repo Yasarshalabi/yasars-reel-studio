@@ -28,7 +28,7 @@ async function boot() {
   const project = await api<ProjectResponse>("/api/project");
 
   globalThis.__REVIEW_STATIC_FILES__ = project.staticFiles.map((name) => ({ name, lastModified: 0, sizeInBytes: 0 }));
-  document.title = `${project.slug} · Review Editor`;
+  document.title = `${project.slug} · Yasar's Reel Studio`;
   const store = createEditorStore(project.manifest);
 
   (window as unknown as { __review: unknown }).__review = { store, project, client: getClient() };
