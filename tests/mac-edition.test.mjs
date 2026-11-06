@@ -43,8 +43,8 @@ test('the lock carries valid macOS pins and rejects a broken one', async () => {
   assert.throws(() => validateLock(broken), /macos\.whisper/);
 });
 
-test('every language is offered once, and the default is Levantine', () => {
-  assert.deepEqual(LANGUAGE_CODES, ['ar-JO', 'ar-EG', 'ar-SA', 'ar-MA', 'ar', 'en']);
+test('every language is offered once, Jordanian and Palestinian stand on their own, and the default is Jordanian', () => {
+  assert.deepEqual(LANGUAGE_CODES, ['ar-JO', 'ar-PS', 'ar-LB', 'ar-EG', 'ar-SA', 'ar-MA', 'ar', 'en']);
   assert.equal(DEFAULT_LANGUAGE, 'ar-JO');
   for (const item of LANGUAGES) {
     assert.ok(item.sample && item.label && item.labelEn && item.voice, item.code);
@@ -116,4 +116,43 @@ test('usage statistics are off unless the owner names an endpoint', async () => 
   const stats = await read('scripts/lib/studio-stats.mjs');
   assert.equal(/https:\/\/store\./.test(stats), false);
   assert.ok(stats.includes('REEL_STUDIO_STATS_ENDPOINT'));
+});
+
+test('the dialect guide covers every language, and Jordanian and Palestinian keep their own words', async () => {
+  const guide = await read('instructions/DIALECTS.md');
+  for (const code of LANGUAGE_CODES) assert.ok(guide.includes(`\`${code}\``), code);
+  const section = code => guide.slice(guide.indexOf(`\`${code}\``), guide.indexOf('\n## ', guide.indexOf(`\`${code}\``)));
+  assert.ok(section('ar-JO').includes('هسّا') && section('ar-PS').includes('هلأ'));
+  assert.notEqual(languageInfo('ar-JO').sample, languageInfo('ar-PS').sample);
+});
+
+test('the editor speaks English through its dictionary, keeping the values inside templates', async () => {
+  const {buildTranslator} = await import('../engine/src/review-editor/i18n/translate.ts');
+  const entries = JSON.parse(await read('engine/src/review-editor/i18n/en.json'));
+  const {translate, size} = buildTranslator(entries);
+  assert.ok(size > 1200, `${size} interface strings`);
+  assert.equal(translate('تراجع'), 'Undo');
+  assert.equal(translate('  حفظ (Ctrl+S) '), '  Save (Ctrl+S) ');
+  assert.equal(translate('تعذّر تحميل المشروع: timeout'), 'Could not load the project: timeout');
+  assert.equal(translate('كلمة «يسار»'), 'Word «يسار»', 'a creator word inside a template stays as said');
+  assert.equal(translate('بكرا منحكي'), null, 'creator speech that is not an interface string is left alone');
+  for (const [arabic, english] of Object.entries(entries)) {
+    assert.deepEqual([...english.matchAll(/\{\d+\}/g)].map(m => m[0]).sort(), [...arabic.matchAll(/\{\d+\}/g)].map(m => m[0]).sort(), arabic);
+  }
+});
+
+test('the editor page carries the interface language and keeps the preview untranslated', async () => {
+  const {indexHtml} = await import('../scripts/lib/review-editor-build.mjs');
+  assert.match(indexHtml({ui: 'en'}), /<html lang="en" dir="ltr" data-ui="en">/);
+  assert.match(indexHtml(), /<html lang="ar" dir="rtl" data-ui="ar">/);
+  assert.ok((await read('engine/src/review-editor/PreviewPlayer.tsx')).includes('data-no-translate'));
+  assert.ok((await read('engine/src/review-editor/Timeline.tsx')).includes('data-no-translate={lane.id === "captions"'));
+});
+
+test('sweeping transitions follow the reading direction of the reviewed words', async () => {
+  const {readingDirection, DIRECTIONAL} = await import('../engine/src/prepared-edit/reading-direction.ts');
+  assert.equal(readingDirection([{text: 'Your'}, {text: 'idea'}, {text: 'deserves'}]), 'ltr');
+  assert.equal(readingDirection([{text: 'فكرتك'}, {text: 'بتستاهل'}, {text: 'AI'}]), 'rtl');
+  assert.equal(readingDirection([]), 'rtl', 'a silent graphics video keeps the Arabic default');
+  assert.deepEqual([...DIRECTIONAL].sort(), ['clip-wipe', 'light-scan', 'whip-pan']);
 });

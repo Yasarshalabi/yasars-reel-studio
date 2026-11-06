@@ -232,3 +232,4 @@
 .rv-brand-mark::after { content: ""; position: absolute; top: 50%; left: 50%; translate: -35% -50%; border-block: 4px solid transparent; border-left: 6px solid #e2456b; }
 button.primary { background: #e2456b; border-color: #e2456b; color: #fff; }
 button.primary:hover:not(:disabled) { background: #b92e52; border-color: #b92e52; }
+html[data-ui="en"] .rv-tl-glabel { direction: ltr; }

@@ -7,8 +7,11 @@ import { api } from "./api.ts";
 import { getClient } from "./api-client.ts";
 import { createEditorStore } from "./store.ts";
 import type { ProjectResponse } from "./types.ts";
+import { installEnglishInterface, interfaceLanguage } from "./i18n/translate.ts";
 
 const rootEl = document.getElementById("root")!;
+// The creator chose English: the interface switches to English and reads left to right. Captions and scenes keep their own language.
+if (interfaceLanguage() === "en") installEnglishInterface(document.body);
 
 
 function showError(message: string) {

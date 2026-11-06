@@ -934,13 +934,30 @@
       "homepage": "https://nodejs.org"
     },
     "ffmpeg": {
-      "version": "9.0.2",
-      "build": "1789931890_9.0.2",
-      "ffmpeg": "https://ffmpeg.martin-riedl.de/download/macos/arm64/1789931890_9.0.2/ffmpeg.zip",
-      "ffprobe": "https://ffmpeg.martin-riedl.de/download/macos/arm64/1789931890_9.0.2/ffprobe.zip",
-      "checksumSuffix": ".sha256",
+      "version": "6.1.1",
+      "build": "ffmpeg-static-b6.1.1",
+      "ffmpeg": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-arm64.gz",
+        "sha256": "8923876afa8db5585022d7860ec7e589af192f441c56793971276d450ed3bbfa",
+        "bytes": 19246198,
+        "binarySha256": "a90e3db6a3fd35f6074b013f948b1aa45b31c6375489d39e572bea3f18336584"
+      },
+      "ffprobe": {
+        "url": "https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffprobe-darwin-arm64.gz",
+        "sha256": "d986a8ec7b030899fe66a8a288ed809a3543338705a3ce178cfb85869c5d80be",
+        "bytes": 19207077,
+        "binarySha256": "bb2db6f5d8cef919da12fbf592119a987202a8c060a886f3cab091f9cab90b64"
+      },
+      "fallback": {
+        "version": "9.0.2",
+        "build": "1789931890_9.0.2",
+        "ffmpeg": "https://ffmpeg.martin-riedl.de/download/macos/arm64/1789931890_9.0.2/ffmpeg.zip",
+        "ffprobe": "https://ffmpeg.martin-riedl.de/download/macos/arm64/1789931890_9.0.2/ffprobe.zip",
+        "checksumSuffix": ".sha256",
+        "homepage": "https://ffmpeg.martin-riedl.de"
+      },
       "license": "GPL-3.0",
-      "homepage": "https://ffmpeg.martin-riedl.de"
+      "homepage": "https://github.com/eugeneware/ffmpeg-static"
     },
     "whisper": {
       "release": "b4938",

@@ -189,7 +189,7 @@ export async function installPinnedWhisper(pins, { root = ROOT, download = downl
   const paths = pinnedWhisperPaths(pins, root);
   if (macPin && !fs.existsSync(path.join(paths.directory, 'install.json'))) {
     const built = await buildWhisperForMac(macPin, { root, log });
-    await extract({ archive: built.binDir, directory: paths.directory, record: { releaseTag: macPin.release, releaseUrl: `https://github.com/ggml-org/whisper.cpp/releases/tag/${macPin.release}`, releaseCommit: macPin.commit, archiveSha256: null, archiveUrl: macPin.repo, builtFromSource: true, backend: 'metal' } }, { unzip: copyBuiltRuntime });
+    await extract({ archive: built.binDir, directory: paths.directory, record: { releaseTag: macPin.release, releaseUrl: `https://github.com/ggml-org/whisper.cpp/releases/tag/${macPin.release}`, releaseCommit: macPin.commit, archiveSha256: null, archiveUrl: macPin.repo, builtFromSource: true, backend: built.backend } }, { unzip: copyBuiltRuntime });
   } else if (!fs.existsSync(path.join(paths.directory, 'install.json'))) {
     log(`transcription: whisper.cpp ${runtime.release}`);
     await download({ url: runtime.url, sha256: runtime.sha256, bytes: runtime.bytes, target: paths.archive });
@@ -262,11 +262,24 @@ export async function buildWhisperForMac(pin, { root = ROOT, log = () => {} } = 
   const head = runChecked('git', ['rev-parse', 'HEAD'], { cwd: src, label: 'reading the whisper.cpp commit' });
   if (head !== pin.commit) throw new Error(`whisper.cpp ${pin.release} is at ${head}, expected the pinned commit ${pin.commit}. Delete ${path.relative(root, src)} and run setup again.`);
   const build = path.join(src, 'build');
-  runChecked(cmake, ['-S', src, '-B', build, '-DCMAKE_BUILD_TYPE=Release', '-DBUILD_SHARED_LIBS=OFF', '-DGGML_METAL=ON', '-DGGML_METAL_EMBED_LIBRARY=ON', '-DWHISPER_BUILD_TESTS=OFF', '-DWHISPER_BUILD_EXAMPLES=ON', '-DWHISPER_SDL2=OFF'], { log, label: 'configuring the whisper.cpp build (Metal)' });
-  runChecked(cmake, ['--build', build, '--config', 'Release', '--target', 'whisper-cli', '-j'], { log, label: 'compiling whisper.cpp (a few minutes)' });
+  const common = ['-S', src, '-B', build, '-DCMAKE_BUILD_TYPE=Release', '-DBUILD_SHARED_LIBS=OFF', '-DWHISPER_BUILD_TESTS=OFF', '-DWHISPER_BUILD_EXAMPLES=ON', '-DWHISPER_SDL2=OFF'];
+  const compile = (backend, flags) => {
+    runChecked(cmake, [...common, ...flags], { log, label: `configuring the whisper.cpp build (${backend})` });
+    runChecked(cmake, ['--build', build, '--config', 'Release', '--target', 'whisper-cli', '-j'], { log, label: 'compiling whisper.cpp (a few minutes)' });
+  };
+  // Metal (the Mac's GPU) first; the shader source is embedded, so Command Line Tools are enough. If this Mac's SDK
+  // cannot build it, fall back to the CPU build, which still uses Apple's Accelerate framework.
+  let backend = 'metal';
+  try { compile('Metal', ['-DGGML_METAL=ON', '-DGGML_METAL_EMBED_LIBRARY=ON']); }
+  catch (error) {
+    log(`transcription: Metal build failed (${error.message.slice(0, 160)}); building for the CPU instead`);
+    await fsp.rm(build, { recursive: true, force: true });
+    backend = 'cpu';
+    compile('CPU', ['-DGGML_METAL=OFF']);
+  }
   const binDir = path.join(build, 'bin');
   if (!fs.existsSync(path.join(binDir, 'whisper-cli'))) throw new Error('The whisper.cpp build finished without build/bin/whisper-cli.');
-  return { binDir, commit: head };
+  return { binDir, commit: head, backend };
 }
 
 // Plays the role of unzip for a source build: copy the compiled CLI into the staging folder.

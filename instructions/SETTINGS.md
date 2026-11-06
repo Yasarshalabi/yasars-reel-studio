@@ -8,7 +8,7 @@ Removed style ids are accepted on load and resolve to their merged replacement w
 
 «افتح إعداداتي» or a request to change defaults: open `node scripts/studio.mjs settings` as a long-running command and open its printed local URL. Verify the save with `node scripts/profile.mjs check`. Preserve profiles at session start. Schema 2 is readable without rewriting; screen saves migrate and back up. On a stale save, reload instead of overwriting a newer change.
 
-`language` is the creator's working language: the assistant speaks it (table in `AGENTS.md`), post descriptions are written in it, and transcription listens for Arabic or English to match. A different language for one video is a brief override, not a profile change. English captions render left to right; the Arabic typography checks apply only to Arabic text.
+`language` is the creator's working language: the assistant speaks it (table in `AGENTS.md`), post descriptions are written in it ([DIALECTS](DIALECTS.md) has each dialect's words and comment calls), and transcription listens for Arabic or English to match. A different language for one video is a brief override, not a profile change. English captions render left to right; the Arabic typography checks apply only to Arabic text.
 
 Each preference independently uses `{"mode":"auto","value":null}` or `{"mode":"fixed","value":"<listed choice>"}`:
 
@@ -36,7 +36,7 @@ The assistant writes `preferences.character` only when the creator asks for thei
 
 Ask, one at a time, and never invent an answer:
 
-0. Language: Levantine (`ar-JO`), Egyptian (`ar-EG`), Gulf (`ar-SA`), Maghrebi (`ar-MA`), White Arabic (`ar`) or English (`en`).
+0. Language: Jordanian (`ar-JO`), Palestinian (`ar-PS`), Syrian/Lebanese (`ar-LB`), Egyptian (`ar-EG`), Gulf (`ar-SA`), Maghrebi (`ar-MA`), White Arabic (`ar`) or English (`en`).
 1. Name (person or brand).
 2. Social handle — optional; `null` if they have none.
 3. Follow card at the end? Needs the handle.
@@ -46,4 +46,4 @@ Ask, one at a time, and never invent an answer:
 7. Platforms: Instagram, TikTok and/or YouTube Shorts. Preserve existing selections; do not add a platform the creator did not choose.
 8. Each preference above: automatic or fixed from its listed choices. Offer automatic when undecided.
 
-Write it like `PROFILE.example.json` (schema 3, `language` one of `ar-JO`, `ar-EG`, `ar-SA`, `ar-MA`, `ar`, `en` as the creator chose, all six required `preferences`, plus `digits` when the creator chose one) and validate with `node scripts/profile.mjs check`. Relay Arabic errors and fix the answer. A request to change defaults authorizes that change; preserve all other fields. Prefer the screen's backed-up save.
+Write it like `PROFILE.example.json` (schema 3, `language` one of `ar-JO`, `ar-PS`, `ar-LB`, `ar-EG`, `ar-SA`, `ar-MA`, `ar`, `en` as the creator chose, all six required `preferences`, plus `digits` when the creator chose one) and validate with `node scripts/profile.mjs check`. Relay Arabic errors and fix the answer. A request to change defaults authorizes that change; preserve all other fields. Prefer the screen's backed-up save.

@@ -8,14 +8,16 @@ Speak the creator's language from `PROFILE.json` `language`, concisely:
 
 | `language` | Speak and write |
 | --- | --- |
-| `ar-JO` | Levantine Arabic (Jordanian/Palestinian everyday speech) |
+| `ar-JO` | Jordanian Arabic (Amman everyday speech) |
+| `ar-PS` | Palestinian Arabic (everyday urban speech) |
+| `ar-LB` | Syrian and Lebanese Arabic |
 | `ar-EG` | Egyptian Arabic |
 | `ar-SA` | Gulf Arabic (Saudi/Emirati everyday speech) |
 | `ar-MA` | Maghrebi Arabic (Darija); switch to simple White Arabic when a term would be unclear |
 | `ar` | White Arabic: simple, neutral Arabic understood across the Arab world |
 | `en` | Friendly, plain English |
 
-Before a profile exists, answer in the language and dialect the user writes in. A request in another language for one reply or one video is honored without changing the profile. Command output lines printed in Arabic are relayed in the creator's language, keeping their meaning.
+Word lists, comment calls and hooks for each one are in `instructions/DIALECTS.md`. Before a profile exists, answer in the language and dialect the user writes in. A request in another language for one reply or one video is honored without changing the profile. Command output lines printed in Arabic are relayed in the creator's language, keeping their meaning.
 
 ## Start and route the request
 

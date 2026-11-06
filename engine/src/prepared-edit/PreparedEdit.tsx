@@ -1,4 +1,5 @@
 import {getStyleCaption} from '../styles/themes';
+import {readingDirection, DIRECTIONAL} from './reading-direction';
 import {CAPTION_DESIGNS} from '../styles/caption-designs';
 import {staticCaptionsFor,clauseCaptionsFor,aliasPolicy,aliasFontOverride} from '../styles/style-compat.ts';
 import {familyDesign} from '../styles/family-designs';
@@ -226,7 +227,7 @@ const ScenePresentation:React.FC<{edit:EditManifest;index:number;sectionIndex?:n
   if(scene.camera)layer=<SceneCamera camera={scene.camera} sceneId={scene.id} durationInFrames={scene.durationInFrames} frameOverride={cameraFrame} area={scene.layout==='split'?entranceBox('split',seam):undefined}>{layer}</SceneCamera>;
   if(entrance){
     const Component=TRANSITIONS[entrance.kind].Component;
-    layer=<Component {...entrance} atFrame={lead} fps={edit.source.fps} box={TRANSITION_RULES[entrance.kind].fullFrame?entranceBox('takeover',seam):entranceBox(scene.layout,seam)} outgoing={outgoing} {...outgoingProps} timingManaged>{layer}</Component>;
+    layer=<Component {...entrance} dir={DIRECTIONAL.has(entrance.kind)?entrance.dir??readingDirection(edit.captions.words):entrance.dir} atFrame={lead} fps={edit.source.fps} box={TRANSITION_RULES[entrance.kind].fullFrame?entranceBox('takeover',seam):entranceBox(scene.layout,seam)} outgoing={outgoing} {...outgoingProps} timingManaged>{layer}</Component>;
   }
   if(hue){
     const height=scene.layout==='split'?seam:undefined;
@@ -319,7 +320,7 @@ export const PreparedEdit:React.FC<PreparedEditProps> = (props)=>{
     {(edit.transitions??[]).map((transition,index)=>{
       if(!isOverlayKind(transition.kind) || TRANSITION_RULES[transition.kind].needsOutgoing) return null;
       const Component=TRANSITIONS[transition.kind].Component;
-      return <Component key={index} {...transition} fps={edit.source.fps} paper={theme.background} ink={theme.accent}/>;
+      return <Component key={index} {...transition} dir={DIRECTIONAL.has(transition.kind)?transition.dir??readingDirection(edit.captions.words):transition.dir} fps={edit.source.fps} paper={theme.background} ink={theme.accent}/>;
     })}
     </PictureStack>
     {/* Speech follows the manifest cut, independently of picture masks, retained layouts and overlays. */}

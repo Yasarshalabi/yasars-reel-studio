@@ -65,7 +65,7 @@ const LaneView = memo(function LaneView({ lane, height, ppf, winFrom, winTo, fps
   const scenes = lane.id === "scenes";
   let tip: React.ReactNode = null;
   return (
-    <div className={`rv-tl-lane rv-lane-${lane.id}`} style={{ height }} data-lane={lane.id}
+    <div className={`rv-tl-lane rv-lane-${lane.id}`} style={{ height }} data-lane={lane.id} data-no-translate={lane.id === "captions" ? "" : undefined}
       onPointerDown={pointer.down} onPointerMove={pointer.move} onPointerUp={pointer.up} onPointerCancel={pointer.up} onMouseOver={pointer.over}>
       {items.map((it) => {
         const g = ghost && ghost.key === it.key ? ghost : null;

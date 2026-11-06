@@ -33,8 +33,16 @@ const panelsPlugin = {
   },
 };
 
-export const indexHtml = ({ title = "Yasar's Reel Studio — Editor" } = {}) => `<!doctype html>
-<html lang="ar" dir="rtl">
+// The interface follows the creator's profile language: Arabic for every Arabic dialect, English for an English profile.
+export async function interfaceLanguage(root = ROOT) {
+  try {
+    const profile = JSON.parse((await fs.readFile(path.join(root, 'PROFILE.json'), 'utf8')).replace(/^\ufeff/, ''));
+    return profile?.language === 'en' ? 'en' : 'ar';
+  } catch { return 'ar'; }
+}
+
+export const indexHtml = ({ title = "Yasar's Reel Studio — Editor", ui = 'ar' } = {}) => `<!doctype html>
+<html lang="${ui}" dir="${ui === 'en' ? 'ltr' : 'rtl'}" data-ui="${ui}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -92,7 +100,7 @@ export async function buildReviewApp({ dev = false, edit } = {}) {
     bytes += out.contents.byteLength;
   }
   if (!files.has('/app.js')) throw new Error('review-editor build produced no app.js');
-  files.set('/index.html', { contents: Buffer.from(indexHtml()), type: 'text/html; charset=utf-8' });
+  files.set('/index.html', { contents: Buffer.from(indexHtml({ ui: await interfaceLanguage() })), type: 'text/html; charset=utf-8' });
   return {
     projectSceneHash:sceneBuild?.hash??null,
     files,

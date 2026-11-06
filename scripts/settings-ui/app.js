@@ -157,7 +157,7 @@ const PLATFORM_LABELS = [['instagram', 'Instagram'], ['tiktok', 'TikTok'], ['you
 const TOTAL_STEPS = 8;
 let catalog, draft, etag, existing = false, dirty = false, busy = false, step = 0, setup, pollTimer;
 
-const lang = () => catalog?.languages?.find(item => item.code === draft?.language) ?? {code: 'ar-JO', ui: 'ar', dir: 'rtl', sample: 'فكرتك بتستاهل تنشاف', label: 'شامي'};
+const lang = () => catalog?.languages?.find(item => item.code === draft?.language) ?? {code: 'ar-JO', ui: 'ar', dir: 'rtl', sample: 'فكرتك بتستاهل تنشاف', label: 'أردني', labelEn: 'Jordanian Arabic'};
 const en = () => lang().ui === 'en';
 const t = key => (en() ? STRINGS.en : STRINGS.ar)[key];
 

@@ -76,7 +76,13 @@ export function validateLock(lock) {
   if (mac !== undefined) {
     if (mac?.arch !== 'arm64') problems.push('macos.arch must be arm64');
     if (!text(mac?.node?.version) || !https(mac?.node?.url) || !https(mac?.node?.checksums)) problems.push('macos.node needs version, url and checksums');
-    if (!text(mac?.ffmpeg?.version) || !text(mac?.ffmpeg?.build) || !https(mac?.ffmpeg?.ffmpeg) || !https(mac?.ffmpeg?.ffprobe) || mac?.ffmpeg?.checksumSuffix !== '.sha256') problems.push('macos.ffmpeg needs version, build, ffmpeg and ffprobe urls and checksumSuffix .sha256');
+    if (!text(mac?.ffmpeg?.version) || !text(mac?.ffmpeg?.build)) problems.push('macos.ffmpeg needs version and build');
+    for (const tool of ['ffmpeg', 'ffprobe']) {
+      checkDownload(problems, `macos.ffmpeg.${tool}`, mac?.ffmpeg?.[tool]);
+      if (!SHA256.test(mac?.ffmpeg?.[tool]?.binarySha256 ?? '')) problems.push(`macos.ffmpeg.${tool}.binarySha256 must be 64 lowercase hex characters`);
+    }
+    const fallback = mac?.ffmpeg?.fallback;
+    if (!text(fallback?.build) || !https(fallback?.ffmpeg) || !https(fallback?.ffprobe) || fallback?.checksumSuffix !== '.sha256') problems.push('macos.ffmpeg.fallback needs build, ffmpeg and ffprobe urls and checksumSuffix .sha256');
     if (!/^b\d+$/.test(mac?.whisper?.release ?? '') || !/^[a-f0-9]{40}$/.test(mac?.whisper?.commit ?? '') || !https(mac?.whisper?.repo) || !SEMVER.test(mac?.whisper?.cmake ?? '')) problems.push('macos.whisper needs a build tag, a 40-character commit, an https repo and a CMake version');
     for (const part of ['node', 'ffmpeg', 'whisper', 'browser']) checkSource(problems, `macos.${part}`, mac?.[part]);
   }

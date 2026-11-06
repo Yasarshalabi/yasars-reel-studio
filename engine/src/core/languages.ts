@@ -2,7 +2,7 @@
 // for it and the settings screen shows its own text in Arabic or English to match. Arabic dialects share the Arabic
 // engine (right-to-left text, Arabic typography checks); English captions render left-to-right through the same engine.
 
-export type LanguageCode = "ar-JO" | "ar-EG" | "ar-SA" | "ar-MA" | "ar" | "en";
+export type LanguageCode = "ar-JO" | "ar-PS" | "ar-LB" | "ar-EG" | "ar-SA" | "ar-MA" | "ar" | "en";
 
 export interface LanguageInfo {
   code: LanguageCode;
@@ -25,8 +25,12 @@ export interface LanguageInfo {
 }
 
 export const LANGUAGES: readonly LanguageInfo[] = Object.freeze([
-  {code: "ar-JO", label: "شامي", labelEn: "Levantine Arabic", region: "الأردن · فلسطين · سوريا · لبنان", whisper: "ar", ui: "ar", dir: "rtl",
-    sample: "فكرتك بتستاهل تنشاف", voice: "concise Levantine Arabic (Jordanian/Palestinian everyday speech)"},
+  {code: "ar-JO", label: "أردني", labelEn: "Jordanian Arabic", region: "الأردن", whisper: "ar", ui: "ar", dir: "rtl",
+    sample: "فكرتك بتستاهل تنشاف", voice: "concise Jordanian Arabic (Amman everyday speech: هيك، شو، إشي، بدّي، كثير، هسّا، زي، منيح)"},
+  {code: "ar-PS", label: "فلسطيني", labelEn: "Palestinian Arabic", region: "فلسطين", whisper: "ar", ui: "ar", dir: "rtl",
+    sample: "فكرتك لازم تنشاف", voice: "concise Palestinian Arabic (everyday urban speech: هيك، إشي، بدّي، كمان، هلأ، منيح، ليش)"},
+  {code: "ar-LB", label: "شامي", labelEn: "Syrian & Lebanese Arabic", region: "سوريا · لبنان", whisper: "ar", ui: "ar", dir: "rtl",
+    sample: "فكرتك حرام تضلّ مخبّاية", voice: "concise Syrian/Lebanese Arabic (شو، هلّق، كتير، منيح، بدّي، هيك)"},
   {code: "ar-EG", label: "مصري", labelEn: "Egyptian Arabic", region: "مصر", whisper: "ar", ui: "ar", dir: "rtl",
     sample: "فكرتك تستاهل تتشاف", voice: "concise Egyptian Arabic"},
   {code: "ar-SA", label: "خليجي", labelEn: "Gulf Arabic", region: "السعودية · الإمارات · الكويت · قطر", whisper: "ar", ui: "ar", dir: "rtl",
@@ -40,7 +44,7 @@ export const LANGUAGES: readonly LanguageInfo[] = Object.freeze([
 ] satisfies LanguageInfo[]);
 
 export const LANGUAGE_CODES: readonly LanguageCode[] = Object.freeze(LANGUAGES.map((item) => item.code));
-/** New profiles start in Levantine Arabic, this edition's home market; the picker is the first step of setup. */
+/** New profiles start in Jordanian Arabic, this edition's home market; the picker is the first step of setup. */
 export const DEFAULT_LANGUAGE: LanguageCode = "ar-JO";
 /** Profiles written before languages existed (schema 2 and 3 from the original studio) are Egyptian. */
 export const LEGACY_LANGUAGE: LanguageCode = "ar-EG";

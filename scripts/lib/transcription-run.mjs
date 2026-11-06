@@ -97,7 +97,7 @@ async function probeAudio(ffprobe, media) {
 export function whisperArguments({ options, runtime, model, wav, outputPrefix }) {
 
 
-  const args = ['-m', model.path, '-f', wav, '-l', options.language, '-t', String(options.threads), ...(options.backend === 'metal' ? [] : ['--no-gpu']), '--no-flash-attn', '--output-json-full', '--output-file', outputPrefix, '--max-len', '1', '--split-on-word'];
+  const args = ['-m', model.path, '-f', wav, '-l', options.language, '-t', String(options.threads), ...(options.backend === 'metal' && runtime?.backend !== 'cpu' ? [] : ['--no-gpu']), '--no-flash-attn', '--output-json-full', '--output-file', outputPrefix, '--max-len', '1', '--split-on-word'];
   if (options.timing === 'dtw') args.push('--dtw', options.model.replaceAll('-', '.'));
   if (options.vad) args.push('--vad', '--vad-model', runtime.vad.path);
   return args;

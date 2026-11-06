@@ -143,13 +143,19 @@ export function setupSteps(root, lock) {
       key: async () => IS_MAC ? `mac:${lock.macos.ffmpeg.build}` : lock.ffmpeg.sha256,
       verify: async () => {
         const report = await fs.readFile(at('Tools/bin/ffmpeg-install.json'), 'utf8').then(JSON.parse).catch(() => null);
-        const pinned = IS_MAC ? report?.platform === 'macos-arm64' && report.build === lock.macos.ffmpeg.build : report?.archiveSha256 === lock.ffmpeg.sha256;
-        return report?.ok === true && pinned
+        if (IS_MAC) {
+          // The recorded binaries must still be the ones installed: pinned hashes, or the fallback's hashes recorded at install.
+          const builds = [lock.macos.ffmpeg.build, lock.macos.ffmpeg.fallback.build];
+          if (report?.ok !== true || report.platform !== 'macos-arm64' || !builds.includes(report.build)) return false;
+          const expected = report.source === 'pinned' ? {ffmpeg: lock.macos.ffmpeg.ffmpeg.binarySha256, ffprobe: lock.macos.ffmpeg.ffprobe.binarySha256} : report.binarySha256;
+          return (await sha256File(at('Tools/bin/ffmpeg'))) === expected?.ffmpeg && (await sha256File(at('Tools/bin/ffprobe'))) === expected?.ffprobe;
+        }
+        return report?.ok === true && report.archiveSha256 === lock.ffmpeg.sha256
           && (await exists(at(`Tools/bin/${exe('ffmpeg')}`))) && (await exists(at(`Tools/bin/${exe('ffprobe')}`)));
       },
       run: async (log) => {
         if (IS_MAC) {
-          log('ffmpeg: Apple Silicon build, checked against the publisher SHA-256');
+          log('ffmpeg: Apple Silicon build, pinned SHA-256');
           await runProcess(process.execPath, [at('scripts/install-ffmpeg-mac.mjs')], {cwd: root});
           return;
         }

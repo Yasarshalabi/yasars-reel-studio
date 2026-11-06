@@ -128,7 +128,7 @@ export const PreviewPlayer: React.FC<{ project: ProjectResponse; guides: GuidesM
 
   return (
     <div className="rv-preview" dir="ltr">
-      <div className="rv-preview-frame">
+      <div className="rv-preview-frame" data-no-translate={inputProps ? "" : undefined}>
         {inputProps ? (
           <Boundary label="المعاينة وقفت" resetKey={inputProps}>
             <Player
